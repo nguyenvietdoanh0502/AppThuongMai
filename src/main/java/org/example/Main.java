@@ -1,5 +1,9 @@
 package org.example;
 
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import org.example.api.CallApiProduct;
 import org.example.dao.ProductDAO;
 import org.example.model.Product;
@@ -9,23 +13,19 @@ import java.util.List;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
+public class Main extends Application {
     public static void main(String[] args) {
-        CallApiProduct service = new CallApiProduct();
-        ProductDAO productDAO = new ProductDAO();
-        try {
-            List<Product> products = service.getAllProducts();
+        launch(args);
+    }
 
-            System.out.println("Đã tìm thấy " + products.size() + " sản phẩm.");
-
-            // Duyệt qua từng cái và in ra
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        List<Product> products= productDAO.getAllProducts();
-        for(var x: products){
-            System.out.println(x);
-        }
+    @Override
+    public void start(Stage stage) throws Exception {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/view/UserView.fxml")
+        );
+        Scene scene = new Scene(loader.load());
+        stage.setScene(scene);
+        stage.setTitle("Test");
+        stage.show();
     }
 }
