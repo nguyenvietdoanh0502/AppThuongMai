@@ -37,7 +37,7 @@ public class ProductCardController implements Initializable {
     public void setData(Product product){
         lblTitle.setText(product.getTitle());
         lblPrice.setText("$"+String.valueOf(product.getPrice()));
-        lblCategory.setText(product.getCategory());
+        lblCategory.setText(product.getCategory().toUpperCase());
         try{
             if(product.getImage()!=null && !product.getImage().isEmpty()){
                 Image image = new Image(product.getImage(),true);

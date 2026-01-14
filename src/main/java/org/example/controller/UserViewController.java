@@ -3,10 +3,9 @@ package org.example.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import org.example.api.CallApiProduct;
+import org.example.api.CallApi;
 import org.example.model.Product;
 import org.example.service.ProductService;
 import org.example.service.impl.ProductServiceImpl;
@@ -20,7 +19,7 @@ public class UserViewController implements Initializable {
     @FXML
     private TilePane productContainer;
     private ProductService productService = ProductServiceImpl.getInstance();
-    private CallApiProduct apiProduct = new CallApiProduct();
+    private CallApi apiProduct = new CallApi();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
