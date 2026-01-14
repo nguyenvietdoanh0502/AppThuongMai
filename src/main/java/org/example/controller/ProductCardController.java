@@ -49,7 +49,6 @@ public class ProductCardController implements Initializable {
         }
     }
     private void setupHoverEffect() {
-        // 1. Hiệu ứng bóng đổ (DropShadow)
         DropShadow dropShadow = new DropShadow();
         dropShadow.setRadius(10);
         dropShadow.setOffsetX(0);
@@ -57,29 +56,23 @@ public class ProductCardController implements Initializable {
         dropShadow.setColor(Color.rgb(0, 0, 0, 0.1)); // Bóng mờ mặc định
         cardContainer.setEffect(dropShadow);
 
-        // 2. Sự kiện khi RÊ chuột vào (Mouse Entered)
         cardContainer.setOnMouseEntered(event -> {
-            // Phóng to nhẹ lên 1.05 lần
             ScaleTransition st = new ScaleTransition(Duration.millis(200), cardContainer);
             st.setToX(1.05);
             st.setToY(1.05);
             st.play();
 
-            // Bóng đậm hơn và lan rộng ra
             dropShadow.setRadius(20);
             dropShadow.setColor(Color.rgb(0, 0, 0, 0.3));
             cardContainer.setStyle("-fx-cursor: hand; -fx-background-color: white; -fx-background-radius: 10;");
         });
 
-        // 3. Sự kiện khi RÚT chuột ra (Mouse Exited)
         cardContainer.setOnMouseExited(event -> {
-            // Thu nhỏ về kích thước gốc (1.0)
             ScaleTransition st = new ScaleTransition(Duration.millis(200), cardContainer);
             st.setToX(1.0);
             st.setToY(1.0);
             st.play();
 
-            // Bóng mờ lại như cũ
             dropShadow.setRadius(10);
             dropShadow.setColor(Color.rgb(0, 0, 0, 0.1));
             cardContainer.setStyle("-fx-background-color: white; -fx-background-radius: 10;");
