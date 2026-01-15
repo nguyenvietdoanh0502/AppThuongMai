@@ -17,7 +17,7 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/view/UserView.fxml")
         );
-        Scene scene = new Scene(loader.load());
+        Scene scene = new Scene(loader.load(),1050,600);
         stage.setScene(scene);
         stage.setTitle("Test");
         stage.show();

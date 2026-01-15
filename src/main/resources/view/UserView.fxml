@@ -18,9 +18,9 @@
 <GridPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.UserViewController">
 
     <columnConstraints>
-        <ColumnConstraints hgrow="NEVER" maxWidth="300.0" minWidth="200.0" prefWidth="250.0" />
+        <ColumnConstraints fx:id="colSidebar" hgrow="NEVER" maxWidth="300.0" minWidth="200.0" prefWidth="250.0" />
 
-        <ColumnConstraints hgrow="ALWAYS" />
+        <ColumnConstraints fx:id="colContent" hgrow="ALWAYS" />
     </columnConstraints>
 
     <rowConstraints>
@@ -65,7 +65,7 @@
         </HBox>
 
 
-        <VBox style="-fx-background-color: white; -fx-border-color: #eee; -fx-border-width: 0 1 0 0;" GridPane.columnIndex="0" GridPane.rowIndex="1">
+        <VBox fx:id="sidebarFilter" style="-fx-background-color: white; -fx-border-color: #eee; -fx-border-width: 0 1 0 0;" GridPane.columnIndex="0" GridPane.rowIndex="1">
             <children>
                 <Label style="-fx-font-size: 18px;" text="Filter Area" />
             </children>
@@ -75,7 +75,7 @@
         </VBox>
 
 
-        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent;" GridPane.columnIndex="1" GridPane.rowIndex="1">
+        <ScrollPane fx:id="contentArea" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent;" GridPane.columnIndex="1" GridPane.rowIndex="1">
             <content>
                 <TilePane fx:id="productContainer" hgap="20.0" prefColumns="3" tileAlignment="TOP_LEFT" vgap="20.0">
                     <padding>

@@ -47,13 +47,15 @@ public class ProductCardController implements Initializable {
         catch (Exception e){
             e.printStackTrace();
         }
+        lblTitle.setStyle("-fx-text-fill: black;");
+        lblPrice.setStyle("-fx-text-fill: black;");
     }
     private void setupHoverEffect() {
         DropShadow dropShadow = new DropShadow();
         dropShadow.setRadius(10);
         dropShadow.setOffsetX(0);
         dropShadow.setOffsetY(0);
-        dropShadow.setColor(Color.rgb(0, 0, 0, 0.1)); // Bóng mờ mặc định
+        dropShadow.setColor(Color.rgb(0, 0, 0, 0.1));
         cardContainer.setEffect(dropShadow);
 
         cardContainer.setOnMouseEntered(event -> {
