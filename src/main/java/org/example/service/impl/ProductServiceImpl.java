@@ -1,9 +1,11 @@
 package org.example.service.impl;
 
+import org.example.api.CallApi;
 import org.example.dao.ProductDAO;
 import org.example.model.Product;
 import org.example.service.ProductService;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,5 +27,18 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> getAllProduct() {
         return productDAO.getAllProducts();
+    }
+
+    @Override
+    public List<Product> getRelatedProduct(Product product) throws IOException, InterruptedException {
+        CallApi callApi = new CallApi();
+        List<Product> productList = callApi.getAllProducts();
+        List<Product> res = new ArrayList<>();
+        for(Product x: productList){
+            if(x.getCategory().equals(product.getCategory()) && x.getProductId()!=product.getProductId()){
+                res.add(x);
+            }
+        }
+        return res;
     }
 }
