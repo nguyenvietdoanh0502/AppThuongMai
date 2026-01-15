@@ -1,11 +1,10 @@
 package org.example.api;
 
 import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
+import org.example.model.Category;
 import org.example.model.Product;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -15,10 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class CallApiProduct {
+public class CallApi {
     private static final String BASE_URL = "https://fakestoreapi.com/products";
     private final HttpClient httpClient;
-    public CallApiProduct(){
+    public CallApi(){
         this.httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
     }
     private List<Product> parseJsonToProducts(String json){
@@ -52,5 +51,25 @@ public class CallApiProduct {
         } else {
             return new ArrayList<>();
         }
+    }
+    private List<Category> parseJsonToCategory(String json){
+        List<Category> categories = new ArrayList<>();
+        JsonArray jsonArray = JsonParser.parseString(json).getAsJsonArray();
+        for(JsonElement element: jsonArray){
+            JsonObject jsonObject = element.getAsJsonObject();
+            Category p = new Category();
+            p.setName(jsonObject.get("category").getAsString());
+            p.setCategoryId(1);
+            categories.add(p);
+        }
+        return categories;
+    }
+    public List<Category> getAllCategories() throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL)).GET().header("Content-Type", "application/json").build();
+        HttpResponse<String> response = httpClient.send(request,HttpResponse.BodyHandlers.ofString());
+        if(response.statusCode()==200){
+            return parseJsonToCategory(response.body());
+        }
+        return new ArrayList<>();
     }
 }
