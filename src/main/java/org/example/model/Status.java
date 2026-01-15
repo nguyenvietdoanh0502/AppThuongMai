@@ -1,4 +1,7 @@
 package org.example.model;
 
-public class Status {
+public enum Status {
+    ACTIVE,
+    INACTIVE,
+    BLOCKED
 }
