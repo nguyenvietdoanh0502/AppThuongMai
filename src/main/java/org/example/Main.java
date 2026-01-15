@@ -1,16 +1,18 @@
 package org.example;
 
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import org.example.api.CallApiProduct;
+import org.example.dao.ProductDAO;
+import org.example.model.Product;
+
+import java.util.Scanner;
+import java.util.List;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main extends Application {
+public class Main {
+    private static final Scanner sc = new Scanner(System.in);
+
     public static void main(String[] args) {
-        launch(args);
-    }
 
     @Override
     public void start(Stage stage) throws Exception {
