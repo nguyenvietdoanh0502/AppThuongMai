@@ -1,12 +1,12 @@
 package org.example.service;
 
-import org.example.dao.UserDao;
+import org.example.dao.UserDAO;
 import org.example.model.Role;
 import org.example.model.Status;
 import org.example.model.User;
 
 public class UserService {
-    private final UserDao userDao = new UserDao();
+    private final UserDAO userDao = new UserDAO();
 
     // 1. Đăng ký tài khoản
     public boolean register(String username, String password, String email) {

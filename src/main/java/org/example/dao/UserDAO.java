@@ -6,7 +6,7 @@ import org.example.model.User;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDao {
+public class UserDAO {
 
     private static final List<User> users = new ArrayList<>();
 
