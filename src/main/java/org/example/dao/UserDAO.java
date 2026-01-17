@@ -1,46 +1,85 @@
 package org.example.dao;
 
 import org.example.model.Role;
+import org.example.model.Status;
 import org.example.model.User;
+import org.example.utils.JDBCUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.*;
 
 public class UserDAO {
 
-    private static final List<User> users = new ArrayList<>();
-
-    static {
-        users.add(new User(
-                "AdNguyenHien",
-                "AdNguyenHien",
-                "hien2k6tta@gmail.com",
-                Role.ADMIN
-        ));
-    }
-
-    //thêm nời dùng
-    public void AddUser(User user) {
-        users.add(user);
-    }
-
-    // tìm người dùng theo tên
     public User SearchUserName(String username) {
-        for (User user : users) {
-            if (user.getUsername().equals(username)) {
-                return user;
+        String sql = "SELECT * FROM users WHERE username = ?";
+        try (Connection conn = JDBCUtils.connectionDB()) {
+            if (conn == null) return null; // dòng này để chặn lỗi InvocationTargetException
+
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, username);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) return mapResultSetToUser(rs);
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
     }
 
-    //quên mật khẩu
-    public User ForgotPassword(String email) {
-        for (User usr : users) {
-            if (usr.getEmail().equals(email)) {
-                return usr;
+    public void AddUser(User user) {
+        String sql = "INSERT INTO users (username, password, email, role, status) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = JDBCUtils.connectionDB()) {
+            if (conn == null) return;
+
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, user.getUsername());
+                ps.setString(2, user.getPassword());
+                ps.setString(3, user.getEmail());
+                ps.setString(4, user.getRole().name());
+                ps.setString(5, Status.ACTIVE.name());
+                ps.executeUpdate();
             }
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
+
+    public User ForgotPassword(String email) {
+        String sql = "SELECT * FROM users WHERE email = ?";
+        try (Connection conn = JDBCUtils.connectionDB()) {
+            if (conn == null) return null;
+
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, email);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) return mapResultSetToUser(rs);
+                }
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
         return null;
+    }
+
+    public boolean updatePassword(String email, String newPassword) {
+        String sql = "UPDATE users SET password = ? WHERE email = ?";
+        try (Connection conn = JDBCUtils.connectionDB()) {
+            if (conn == null) return false;
+
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, newPassword);
+                ps.setString(2, email);
+                return ps.executeUpdate() > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private User mapResultSetToUser(ResultSet rs) throws SQLException {
+        User user = new User();
+        user.setUsername(rs.getString("username"));
+        user.setPassword(rs.getString("password"));
+        user.setEmail(rs.getString("email"));
+        user.setRole(Role.valueOf(rs.getString("role")));
+        user.setStatus(Status.valueOf(rs.getString("status")));
+        return user;
     }
 }
