@@ -93,6 +93,7 @@ public class UserViewController implements Initializable {
                 if (homeViewNode != null) {
                     contentArea.setContent(homeViewNode);
                 }
+                txtSearch.clear();
             });
             contentArea.setContent(inforView);
             collapseSidebar();
