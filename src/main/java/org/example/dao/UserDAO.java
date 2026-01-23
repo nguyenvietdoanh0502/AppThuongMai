@@ -13,7 +13,6 @@ public class UserDAO {
         String sql = "SELECT * FROM users WHERE username = ?";
         try (Connection conn = JDBCUtils.connectionDB()) {
             if (conn == null) return null; // dòng này để chặn lỗi InvocationTargetException
-
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, username);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -39,7 +38,9 @@ public class UserDAO {
                 ps.setString(5, Status.ACTIVE.name());
                 ps.executeUpdate();
             }
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public User ForgotPassword(String email) {
@@ -53,7 +54,9 @@ public class UserDAO {
                     if (rs.next()) return mapResultSetToUser(rs);
                 }
             }
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
