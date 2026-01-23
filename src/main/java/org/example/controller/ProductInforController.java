@@ -92,4 +92,16 @@ public class ProductInforController implements Initializable {
             e.printStackTrace();
         }
     }
+    private Runnable backHandler;
+
+
+    public void setOnBackAction(Runnable action) {
+        this.backHandler = action;
+    }
+    @FXML
+    private void handleBack() {
+        if (backHandler != null) {
+            backHandler.run();
+        }
+    }
 }
