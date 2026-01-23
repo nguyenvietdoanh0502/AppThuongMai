@@ -1,10 +1,19 @@
 package org.example.controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
 import org.example.model.User;
 import org.example.service.UserService;
+
+import java.io.IOException;
+import java.util.EventObject;
 
 public class AccountController {
     @FXML private HBox paneChoice;
@@ -99,11 +108,16 @@ public class AccountController {
         }
     }
 
+
+
+
     private void handleLoginInternal() {
         User user = login(txtUsername.getText(), txtPassword.getText());
         if (user != null) {
             showAlert("Thành công", "Đăng nhập thành công!");
             RoleAssignment(user);
+            switchToMainView();
+
         } else {
             showAlert("Lỗi", "Sai tài khoản hoặc mật khẩu!");
         }
@@ -216,5 +230,20 @@ public class AccountController {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+    private void switchToMainView() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/UserView.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) btnSubmit.getScene().getWindow();
+            Scene scene = new Scene(root,1100,700);
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Lỗi hệ thống", "Không tìm thấy file giao diện UserView.fxml");
+        }
     }
 }

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="15" alignment="CENTER"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controller.AccountController"
+      style="-fx-background-color: white;">
+
+    <padding>
+        <Insets top="30" right="50" bottom="30" left="50"/>
+    </padding>
+
+    <Label fx:id="lblTitle" text="Mua Sắm Ngay Thôi"
+           style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #333; -fx-padding: 0 0 10 0;"/>
+
+    <HBox fx:id="paneChoice" spacing="20" alignment="CENTER">
+        <Button text="Đăng nhập" onAction="#showLoginFrame"
+                style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 25; -fx-cursor: hand; -fx-background-radius: 25;"/>
+        <Button text="Đăng ký" onAction="#showRegisterFrame"
+                style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 25; -fx-cursor: hand; -fx-background-radius: 25;"/>
+    </HBox>
+
+    <VBox fx:id="paneFields" spacing="12" alignment="CENTER" visible="false" managed="false" style="-fx-max-width: 350;">
+
+        <TextField fx:id="txtUsername" promptText="Username" prefHeight="40"
+                   style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #ddd; -fx-background-color: #f9f9f9;"/>
+
+        <TextField fx:id="txtEmail" promptText="Email" prefHeight="40" visible="false" managed="false"
+                   style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #ddd; -fx-background-color: #f9f9f9;"/>
+
+        <StackPane>
+            <PasswordField fx:id="txtPassword" promptText="Mật khẩu" prefHeight="40"
+                           style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #ddd; -fx-background-color: #f9f9f9;"/>
+            <TextField fx:id="txtPasswordVisible" promptText="Mật khẩu" visible="false" managed="false" prefHeight="40"
+                       style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #ddd; -fx-background-color: #f9f9f9;"/>
+        </StackPane>
+
+        <PasswordField fx:id="txtConfirm" promptText="Xác nhận mật khẩu" visible="false" managed="false" prefHeight="40"
+                       style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #ddd; -fx-background-color: #f9f9f9;"/>
+
+        <Button fx:id="btnSubmit" text="Xác nhận" onAction="#handleSubmit"
+                maxWidth="Infinity" prefHeight="45"
+                style="-fx-background-color: #ff9800; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 30; -fx-font-size: 15px;"/>
+
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Button text="Quay lại" onAction="#showMenu"
+                    style="-fx-background-color: #eeeeee; -fx-text-fill: #555555; -fx-cursor: hand; -fx-background-radius: 10;"/>
+
+            <Region HBox.hgrow="ALWAYS" />
+            <CheckBox fx:id="checkShowPassword" text="Hiện mật khẩu" onAction="#handleShowPassword"
+                      style="-fx-font-size: 11px; -fx-text-fill: #777777;"/>
+        </HBox>
+
+        <Hyperlink fx:id="linkForgot" text="Quên mật khẩu?" onAction="#handleForgotPassword"
+                   style="-fx-font-size: 13px; -fx-text-fill: #2196F3;"/>
+    </VBox>
+</VBox>
