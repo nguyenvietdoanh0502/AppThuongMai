@@ -47,12 +47,8 @@ public class UserViewController implements Initializable {
     private String currentSearchKeyword = "";
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        List<Product> products = null;
-        try {
-            products = apiProduct.getAllProducts();
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        List<Product> products = productService.getAllProduct();
+
         loadProducts(products);
         renderCategories(products);
         homeViewNode = contentArea.getContent();
@@ -66,7 +62,6 @@ public class UserViewController implements Initializable {
             applyAllFilters(finalProducts);
         });
 
-        // Listener cho ô Max Price
         maxPrice.textProperty().addListener((obs, oldVal, newVal) -> {
             updatePriceRange();
             applyAllFilters(finalProducts);

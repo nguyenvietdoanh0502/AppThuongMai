@@ -1,15 +1,18 @@
 package org.example.model;
 
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class User {
-    private Object id;
+    private int userId;
     private String username;
     private String password;
+    @Valid()
     private String email;
+
     private Role role;
 
     public User() {
