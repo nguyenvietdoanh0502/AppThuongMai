@@ -13,6 +13,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <GridPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.UserViewController">
@@ -24,14 +25,14 @@
     </columnConstraints>
 
     <rowConstraints>
-        <RowConstraints maxHeight="100.0" minHeight="60.0" prefHeight="80.0" vgrow="NEVER" />
+        <RowConstraints maxHeight="80.0" minHeight="80.0" prefHeight="80.0" vgrow="NEVER" />
 
         <RowConstraints vgrow="ALWAYS" />
     </rowConstraints>
 
     <children>
 
-        <HBox alignment="CENTER" spacing="20.0" style="-fx-background-color: #ffffff;" GridPane.columnSpan="2" GridPane.rowIndex="0">
+        <HBox alignment="CENTER" spacing="20.0" style="-fx-background-color: #ffffff;" GridPane.columnSpan="2">
             <children>
             <ImageView fitHeight="61.0" fitWidth="112.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -65,9 +66,48 @@
         </HBox>
 
 
-        <VBox fx:id="sidebarFilter" style="-fx-background-color: white; -fx-border-color: #eee; -fx-border-width: 0 1 0 0;" GridPane.columnIndex="0" GridPane.rowIndex="1">
+        <VBox fx:id="sidebarFilter" style="-fx-background-color: white; -fx-border-color: #eee; -fx-border-width: 0 1 0 0;" GridPane.rowIndex="1">
             <children>
-                <Label style="-fx-font-size: 18px;" text="Filter Area" />
+                <VBox spacing="10.0" style="-fx-padding: 10;">
+                    <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="Categories">
+                  <font>
+                     <Font size="21.0" />
+                  </font></Label>
+                    <VBox fx:id="categoryContainer" spacing="5.0">
+                    </VBox>
+                </VBox>
+            <VBox prefHeight="56.0" prefWidth="209.0" spacing="10.0" style="-fx-padding: 10;">
+               <children>
+                  <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="Prices">
+                     <font>
+                        <Font size="21.0" />
+                     </font>
+                  </Label>
+                  <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <Label text="Min:" textFill="#333333">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="minPrice" promptText="Nhập giá nhỏ nhất..." />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <Label text="Max" textFill="#333333">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="maxPrice" promptText="Nhập giá lớn nhất..." />
+                           </children>
+                        </HBox>
+                     </children></VBox>
+               </children>
+            </VBox>
             </children>
             <padding>
                 <Insets left="20" right="20" top="20" />
