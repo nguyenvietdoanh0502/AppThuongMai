@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<?import javafx.scene.layout.Region?>
+<VBox fx:id="cardContainer" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="296.0" prefWidth="220.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.ProductCardController">
+    <children>
+        <HBox alignment="CENTER" prefHeight="180.0" prefWidth="220.0" style="-fx-background-color: #f4f4f4; -fx-background-radius: 10 10 0 0;">
+            <children>
+                <ImageView fx:id="imgProduct" fitHeight="150.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true" />
+            </children>
+        </HBox>
+
+        <VBox prefHeight="150.0" prefWidth="220.0" spacing="5.0">
+            <children>
+                <Label fx:id="lblCategory" text="Adidas" textFill="#888888">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </Label>
+                <Label fx:id="lblTitle" text="Men adi-dash Running Shoes" wrapText="true">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <children>
+                        <Label fx:id="lblPrice" text="\$60.00">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </HBox>
+                <Region VBox.vgrow="ALWAYS" />
+                <Button maxWidth="Infinity" mnemonicParsing="false" style="-fx-background-color: black; -fx-text-fill: white; -fx-cursor: hand;" text="Add to Cart" />
+            </children>
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+        </VBox>
+    </children>
+</VBox>
