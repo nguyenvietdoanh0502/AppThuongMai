@@ -103,21 +103,17 @@ public class UserViewController implements Initializable {
     }private void collapseSidebar() {
         sidebarFilter.setVisible(false);
         sidebarFilter.setManaged(false);
-
         colSidebar.setPercentWidth(0);
         colSidebar.setMinWidth(0);
         colSidebar.setPrefWidth(0);
         colSidebar.setMaxWidth(0);
-
         colContent.setPercentWidth(100);
     }
 
     public void restoreSidebar() {
         sidebarFilter.setVisible(true);
         sidebarFilter.setManaged(true);
-
         colSidebar.setPercentWidth(20);
         colContent.setPercentWidth(80);
-
     }
 }

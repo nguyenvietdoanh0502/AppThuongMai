@@ -2,7 +2,6 @@ package org.example.service;
 
 import org.example.dao.UserDAO;
 import org.example.model.Role;
-import org.example.model.Status;
 import org.example.model.User;
 
 public class UserService {
@@ -26,7 +25,7 @@ public class UserService {
     public User login(String username, String password) {
         User user = userDao.SearchUserName(username);
         // Kiểm tra thêm điều kiện null để tránh NullPointerException khi so sánh password
-        if (user == null || !user.getPassword().equals(password) || user.getStatus() != Status.ACTIVE) {
+        if (user == null || !user.getPassword().equals(password) ) {
             return null;
         }
         return user;
