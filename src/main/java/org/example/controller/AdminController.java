@@ -28,7 +28,6 @@ public class AdminController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Cấu hình các cột hiển thị
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         colPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
@@ -37,7 +36,6 @@ public class AdminController implements Initializable {
 
         loadData();
 
-        // Lắng nghe khi người dùng chọn một dòng trên bảng
         tableProducts.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 showDetail(newSelection);
@@ -118,7 +116,6 @@ public class AdminController implements Initializable {
     private void handleDelete() {
         Product selected = tableProducts.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            // Hiển thị xác nhận trước khi xóa
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Bạn có chắc chắn muốn xóa: " + selected.getTitle() + "?", ButtonType.YES, ButtonType.NO);
             alert.showAndWait();
 
@@ -143,7 +140,6 @@ public class AdminController implements Initializable {
         tableProducts.getSelectionModel().clearSelection();
     }
 
-    // Hàm kiểm tra tính hợp lệ của dữ liệu nhập vào
     private boolean validateInput() {
         String errorMsg = "";
 

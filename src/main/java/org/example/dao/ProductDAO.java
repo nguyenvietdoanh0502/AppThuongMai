@@ -61,7 +61,7 @@ public class ProductDAO {
         return products;
     }
 
-    //(UPDATE)
+
     public void updateProduct(Product product) {
         String sql = "UPDATE products SET title=?,price=?,description=?,category_name=?,image=?,rating_rate=?,rating_count=?,quantity=? WHERE product_id=?";
         try (Connection conn = JDBCUtils.connectionDB();
@@ -82,7 +82,7 @@ public class ProductDAO {
         }
     }
 
-    //(DELETE)
+
     public void deleteProduct(int id) {
         String sql = "DELETE FROM products WHERE product_id=?";
         try (Connection conn = JDBCUtils.connectionDB();
@@ -95,7 +95,7 @@ public class ProductDAO {
         }
     }
 
-    //thêm mới : lấy 1 sản phẩm (Để đổ dữ liệu vào form Edit)
+
     public Product getProductById(int id) {
         String sql = "SELECT * FROM products WHERE product_id=?";
         try (Connection conn = JDBCUtils.connectionDB();

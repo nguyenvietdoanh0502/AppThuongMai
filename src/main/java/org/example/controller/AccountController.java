@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import org.example.constant.Regex;
+import org.example.model.Role;
 import org.example.model.User;
 import org.example.service.UserService;
 
@@ -35,7 +36,6 @@ public class AccountController {
 
     @FXML
     public void initialize() {
-        // Đồng bộ dữ liệu giữa ô mật khẩu ẩn và hiện
         if (txtPasswordVisible != null && txtPassword != null) {
             txtPasswordVisible.textProperty().bindBidirectional(txtPassword.textProperty());
             txtPasswordVisible.setVisible(false);
@@ -43,7 +43,6 @@ public class AccountController {
         }
     }
 
-    // --- CÁC PHƯƠNG THỨC DÀNH CHO MAINLOGIN (FIX LỖI CANNOT RESOLVE) ---
 
     public String register(String u, String p, String e) {
         return userService.register(u, p, e) ? "Thành công" : "Thất bại";
@@ -68,7 +67,6 @@ public class AccountController {
         return userService.checkAccountExist(u, e);
     }
 
-    // --- XỬ LÝ GIAO DIỆN JAVAFX ---
 
     @FXML
     public void showMenu() {
@@ -127,7 +125,12 @@ public class AccountController {
         if (user != null) {
             showAlert("Thành công", "Đăng nhập thành công!");
             RoleAssignment(user);
-            switchToMainView();
+            if(user.getRole()== Role.USER){
+                switchToUserView();
+            }
+            else{
+                switchToAdminView();
+            }
 
         } else {
             showAlert("Lỗi", "Sai tài khoản hoặc mật khẩu!");
@@ -217,7 +220,6 @@ public class AccountController {
         }
     }
 
-    // --- TRỢ GIÚP GIAO DIỆN ---
 
     private void setupForgotUI() {
         lblTitle.setText("KHÔI PHỤC MẬT KHẨU");
@@ -291,9 +293,23 @@ public class AccountController {
         alert.setContentText(content);
         alert.showAndWait();
     }
-    private void switchToMainView() {
+    private void switchToUserView() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/UserView.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) btnSubmit.getScene().getWindow();
+            Scene scene = new Scene(root,1100,700);
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Lỗi hệ thống", "Không tìm thấy file giao diện UserView.fxml");
+        }
+    }private void switchToAdminView() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AdminView.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) btnSubmit.getScene().getWindow();
             Scene scene = new Scene(root,1100,700);
