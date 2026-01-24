@@ -1,7 +1,6 @@
 package org.example.dao;
 
 import org.example.model.Role;
-import org.example.model.Status;
 import org.example.model.User;
 import org.example.utils.JDBCUtils;
 
@@ -26,7 +25,7 @@ public class UserDAO {
     }
 
     public void AddUser(User user) {
-        String sql = "INSERT INTO users (username, password, email, role, status) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ? )";
         try (Connection conn = JDBCUtils.connectionDB()) {
             if (conn == null) return;
 
@@ -35,7 +34,6 @@ public class UserDAO {
                 ps.setString(2, user.getPassword());
                 ps.setString(3, user.getEmail());
                 ps.setString(4, user.getRole().name());
-                ps.setString(5, Status.ACTIVE.name());
                 ps.executeUpdate();
             }
         } catch (SQLException e) {
@@ -82,7 +80,6 @@ public class UserDAO {
         user.setPassword(rs.getString("password"));
         user.setEmail(rs.getString("email"));
         user.setRole(Role.valueOf(rs.getString("role")));
-        user.setStatus(Status.valueOf(rs.getString("status")));
         return user;
     }
 }

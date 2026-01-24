@@ -11,11 +11,9 @@ public class User {
     private String password;
     private String email;
     private Role role;
-    private Status status;
 
     public User() {
         this.role = Role.USER;
-        this.status = Status.ACTIVE;
     }
 
     public User(String username, String password, String email) {
@@ -30,6 +28,5 @@ public class User {
         this.password = password;
         this.email = email;
         this.role = role;
-        this.status = Status.ACTIVE;
     }
 }

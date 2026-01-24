@@ -9,11 +9,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import org.example.constant.Regex;
 import org.example.model.User;
 import org.example.service.UserService;
 
 import java.io.IOException;
 import java.util.EventObject;
+import java.util.regex.Pattern;
 
 public class AccountController {
     @FXML private HBox paneChoice;
@@ -58,6 +60,7 @@ public class AccountController {
     }
 
     public String resetPasswordLogic(String email, String newPass) {
+
         return userService.ResetPassword(email, newPass) ? "Đổi mật khẩu thành công" : "Lỗi thực thi";
     }
 
@@ -112,6 +115,14 @@ public class AccountController {
 
 
     private void handleLoginInternal() {
+        if(txtUsername.getText().isEmpty()){
+            showAlert("Lỗi","Vui lòng điền đầy đủ Username!");
+            return;
+        }
+        if(txtPassword.getText().isEmpty()){
+            showAlert("Lỗi","Vui lòng điển đầy đủ Password!");
+            return;
+        }
         User user = login(txtUsername.getText(), txtPassword.getText());
         if (user != null) {
             showAlert("Thành công", "Đăng nhập thành công!");
@@ -124,6 +135,32 @@ public class AccountController {
     }
 
     private void handleRegisterInternal() {
+        if(txtUsername.getText().isEmpty()){
+            showAlert("Lỗi","Vui lòng điền đầy đủ Username!");
+            return;
+        }
+        if(txtEmail.getText().isEmpty()){
+            showAlert("Lỗi","Vui lòng điền đầy đủ Email!");
+            return;
+        }
+        Pattern EMAIL_PATTERN = Pattern.compile(Regex.EMAIL_PATTERN);
+        if(!EMAIL_PATTERN.matcher(txtEmail.getText()).matches()){
+            showAlert("Lỗi","Email không đúng định dạng!");
+            return;
+        }
+        if(txtPassword.getText().isEmpty()){
+            showAlert("Lỗi","Vui lòng điền đầy đủ mật khẩu!");
+            return;
+        }
+        if(txtPassword.getText().length()<6){
+            showAlert("Lỗi","Mật khẩu phải có ít nhất 6 ký tự!");
+            return;
+        }
+        Pattern PASS_PATTERN = Pattern.compile(Regex.PASSWORD_PATTERN);
+        if(!PASS_PATTERN.matcher(txtPassword.getText()).matches()){
+            showAlert("Lỗi","Mật khẩu phải bao gồm chữ viết hoa, chữ viết thường, số, ký tự đặc biệt!");
+            return;
+        }
         if (!txtPassword.getText().equals(txtConfirm.getText())) {
             showAlert("Lỗi", "Mật khẩu xác nhận không khớp!");
             return;
@@ -139,11 +176,19 @@ public class AccountController {
 
     @FXML
     public void handleForgotPassword() {
+
         if (!lblTitle.getText().equals("KHÔI PHỤC MẬT KHẨU")) {
             setupForgotUI();
             return;
         }
-
+        if(txtUsername.getText().isEmpty()){
+            showAlert("Lỗi","Vui lòng điền đầy đủ Username!");
+            return;
+        }
+        if(txtEmail.getText().isEmpty()){
+            showAlert("Lỗi","Vui lòng điền đầy đủ Password!");
+            return;
+        }
         if (isVerifyingStep) {
             if (checkAccount(txtUsername.getText(), txtEmail.getText())) {
                 showAlert("Thành công", "username và email hợp lệ! Nhập mật khẩu mới.");
@@ -152,6 +197,20 @@ public class AccountController {
                 showAlert("Lỗi", "Username hoặc Email không chính xác!");
             }
         } else {
+            if(txtPassword.getText().isEmpty()){
+                showAlert("Lỗi","Vui lòng điền đầy đủ Password!");
+                return;
+            }
+            Pattern PASS_PATTERN = Pattern.compile(Regex.PASSWORD_PATTERN);
+            if(!PASS_PATTERN.matcher(txtPassword.getText()).matches()){
+                showAlert("Lỗi","Mật khẩu phải bao gồm chữ viết hoa, chữ viết thường, số, ký tự đặc biệt!");
+                return;
+            }
+            if(!txtPassword.getText().equals(txtConfirm.getText())){
+                showAlert("Lỗi","Xác nhận mật khẩu không trùng khớp!");
+                return;
+            }
+
             String res = resetPasswordLogic(txtEmail.getText(), txtPassword.getText());
             showAlert("Thông báo", res);
             if (res.contains("thành công")) showMenu();
@@ -173,7 +232,8 @@ public class AccountController {
         txtPasswordVisible.setVisible(false);  txtPasswordVisible.setManaged(false);
         txtConfirm.setVisible(false);          txtConfirm.setManaged(false);
         checkShowPassword.setVisible(false);    checkShowPassword.setManaged(false);
-
+        linkForgot.setVisible(false);
+        linkForgot.setManaged(false);
         btnSubmit.setText("Kiểm tra thông tin");
     }
 
