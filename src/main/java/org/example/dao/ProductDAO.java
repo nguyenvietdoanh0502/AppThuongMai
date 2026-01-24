@@ -42,7 +42,7 @@ public class ProductDAO {
                 PreparedStatement ps = conn.prepareStatement(sql);
         ) {
             ResultSet res = ps.executeQuery(sql);
-            if (res.next()) {
+            while (res.next()) {
                 int id = res.getInt("product_id");
                 String title = res.getString("title");
                 double price = res.getDouble("price");

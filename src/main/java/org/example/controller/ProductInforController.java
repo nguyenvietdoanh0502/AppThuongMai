@@ -69,9 +69,6 @@ public class ProductInforController implements Initializable {
     public void loadRelatedProduct(Product product) throws IOException, InterruptedException {
         relatedItemsContainer.getChildren().clear();
         List<Product> relatedList = productService.getRelatedProduct(product);
-        for(Product x:relatedList){
-            System.out.println(x);
-        }
         try{
             for(Product p : relatedList){
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ProductCard.fxml"));
