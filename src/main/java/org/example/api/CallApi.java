@@ -60,9 +60,20 @@ public class CallApi {
             Category p = new Category();
             p.setName(jsonObject.get("category").getAsString());
             p.setCategoryId(1);
-            categories.add(p);
+            if(checkCategory(p.getName(),categories)){
+                categories.add(p);
+            }
+
         }
         return categories;
+    }
+    private boolean checkCategory(String name, List<Category> categories){
+        for(Category x: categories){
+            if(x.getName().equals(name)){
+                return false;
+            }
+        }
+        return true;
     }
     public List<Category> getAllCategories() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL)).GET().header("Content-Type", "application/json").build();
