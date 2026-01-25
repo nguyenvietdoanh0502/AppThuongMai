@@ -1,6 +1,8 @@
 package org.example.model;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +12,6 @@ public class User {
     private int userId;
     private String username;
     private String password;
-    @Valid()
     private String email;
 
     private Role role;

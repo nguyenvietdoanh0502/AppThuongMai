@@ -61,6 +61,24 @@
             <version>3.0.2</version>
             <scope>compile</scope>
         </dependency>
+        <!-- Source: https://mvnrepository.com/artifact/org.mindrot/jbcrypt -->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>8.0.0.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.el</artifactId>
+            <version>4.0.2</version>
+        </dependency>
     </dependencies>
 
 </project>
