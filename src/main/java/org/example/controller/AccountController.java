@@ -1,5 +1,8 @@
 package org.example.controller;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,13 +12,17 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+
 import org.example.constant.Regex;
 import org.example.model.Role;
 import org.example.model.User;
+import org.example.model.dto.RegisterDTO;
 import org.example.service.UserService;
+import jakarta.validation.Validator;
 
 import java.io.IOException;
 import java.util.EventObject;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class AccountController {
@@ -33,6 +40,7 @@ public class AccountController {
     private final UserService userService = new UserService();
     private boolean isRegisterMode = false;
     private boolean isVerifyingStep = true;
+
 
     @FXML
     public void initialize() {
@@ -138,30 +146,13 @@ public class AccountController {
     }
 
     private void handleRegisterInternal() {
-        if(txtUsername.getText().isEmpty()){
-            showAlert("Lỗi","Vui lòng điền đầy đủ Username!");
-            return;
-        }
-        if(txtEmail.getText().isEmpty()){
-            showAlert("Lỗi","Vui lòng điền đầy đủ Email!");
-            return;
-        }
-        Pattern EMAIL_PATTERN = Pattern.compile(Regex.EMAIL_PATTERN);
-        if(!EMAIL_PATTERN.matcher(txtEmail.getText()).matches()){
-            showAlert("Lỗi","Email không đúng định dạng!");
-            return;
-        }
-        if(txtPassword.getText().isEmpty()){
-            showAlert("Lỗi","Vui lòng điền đầy đủ mật khẩu!");
-            return;
-        }
-        if(txtPassword.getText().length()<6){
-            showAlert("Lỗi","Mật khẩu phải có ít nhất 6 ký tự!");
-            return;
-        }
-        Pattern PASS_PATTERN = Pattern.compile(Regex.PASSWORD_PATTERN);
-        if(!PASS_PATTERN.matcher(txtPassword.getText()).matches()){
-            showAlert("Lỗi","Mật khẩu phải bao gồm chữ viết hoa, chữ viết thường, số, ký tự đặc biệt!");
+
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        RegisterDTO dto = new RegisterDTO(txtEmail.getText(), txtPassword.getText(),txtConfirm.getText(),txtUsername.getText());
+        Set<ConstraintViolation<RegisterDTO>> violations = validator.validate(dto);
+        if (!violations.isEmpty()) {
+            showAlert("Lỗi", violations.iterator().next().getMessage());
             return;
         }
         if (!txtPassword.getText().equals(txtConfirm.getText())) {
@@ -171,7 +162,8 @@ public class AccountController {
         String res = register(txtUsername.getText(), txtPassword.getText(), txtEmail.getText());
         if (res.equals("Thành công")) {
             showAlert("Thành công", "Đăng ký thành công!");
-            showMenu();
+            switchToUserView();
+
         } else {
             showAlert("Lỗi", "Tài khoản đã tồn tại!");
         }

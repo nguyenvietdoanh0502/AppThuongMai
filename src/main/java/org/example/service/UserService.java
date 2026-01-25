@@ -3,6 +3,9 @@ package org.example.service;
 import org.example.dao.UserDAO;
 import org.example.model.Role;
 import org.example.model.User;
+import org.example.utils.PasswordUtils;
+
+import static org.example.model.Role.ADMIN;
 
 public class UserService {
     private final UserDAO userDao = new UserDAO();
@@ -12,20 +15,28 @@ public class UserService {
             return false;
         }
 
-        // Nếu DB lỗi, userDao.SearchUserName sẽ trả về null
         if (userDao.SearchUserName(username) != null) {
             return false;
         }
-
-        User user = new User(username, password, email, Role.USER);
+        String hashedPassword = PasswordUtils.hashPassword(password);
+        User user = new User(username, hashedPassword, email, Role.USER);
         userDao.AddUser(user);
         return true;
     }
 
     public User login(String username, String password) {
         User user = userDao.SearchUserName(username);
-        // Kiểm tra thêm điều kiện null để tránh NullPointerException khi so sánh password
-        if (user == null || !user.getPassword().equals(password) ) {
+
+        if (user == null)  {
+            return null;
+        }
+        if(user.getRole()==ADMIN){
+            if(user.getPassword().equals(password)){
+                return user;
+            }
+            return null;
+        }
+        if(!PasswordUtils.checkPassword(password,user.getPassword())){
             return null;
         }
         return user;
@@ -41,6 +52,7 @@ public class UserService {
         if (userAccount == null) {
             return false;
         }
-        return userDao.updatePassword(email, newPassword);
+        String hashedPassword = PasswordUtils.hashPassword(newPassword);
+        return userDao.updatePassword(email, hashedPassword);
     }
 }

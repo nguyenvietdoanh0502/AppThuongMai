@@ -35,7 +35,7 @@ public class ProductDAO {
     }
 
     public List<Product> getAllProducts() {
-        String sql = "SELECT p.product_id, p.title, p.price, p.description, p.category_name, p.image, p.rating_rate,p.rating_count, p.quantity FROM products p";
+        String sql = "SELECT p.product_id, p.title, p.price, p.description, p.category_name, p.image, p.rating_rate,p.rating_count, p.quantity FROM products p WHERE is_deleted = 0";
         List<Product> products = new ArrayList<>();
         try (
                 Connection conn = JDBCUtils.connectionDB();
@@ -63,7 +63,7 @@ public class ProductDAO {
 
 
     public void updateProduct(Product product) {
-        String sql = "UPDATE products SET title=?,price=?,description=?,category_name=?,image=?,rating_rate=?,rating_count=?,quantity=? WHERE product_id=?";
+        String sql = "UPDATE products SET title=?,price=?,description=?,category_name=?,image=?,rating_rate=?,rating_count=?,quantity=? WHERE product_id=? AND is_deleted = 0";
         try (Connection conn = JDBCUtils.connectionDB();
              PreparedStatement ps = conn.prepareStatement(sql)
         ) {
@@ -84,7 +84,7 @@ public class ProductDAO {
 
 
     public void deleteProduct(int id) {
-        String sql = "DELETE FROM products WHERE product_id=?";
+        String sql = "UPDATE products SET is_deleted = 1 WHERE product_id = ?";
         try (Connection conn = JDBCUtils.connectionDB();
              PreparedStatement ps = conn.prepareStatement(sql)
         ) {
@@ -97,7 +97,7 @@ public class ProductDAO {
 
 
     public Product getProductById(int id) {
-        String sql = "SELECT * FROM products WHERE product_id=?";
+        String sql = "SELECT * FROM products WHERE product_id=? AND is_deleted = 0";
         try (Connection conn = JDBCUtils.connectionDB();
              PreparedStatement ps = conn.prepareStatement(sql)
         ) {

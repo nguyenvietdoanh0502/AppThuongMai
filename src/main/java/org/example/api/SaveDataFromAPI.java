@@ -23,8 +23,8 @@ public class SaveDataFromAPI {
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-        String sql = "INSERT INTO products (title,price,description,category_name,image,rating_rate,rating_count,quantity, api_id) " +
-                "VALUES (?, ?, ?, ?, ?,?,?,?,?) " +
+        String sql = "INSERT INTO products (title,price,description,category_name,image,rating_rate,rating_count,quantity, api_id,is_deleted) " +
+                "VALUES (?, ?, ?, ?, ?,?,?,?,?,0) " +
                 "ON DUPLICATE KEY UPDATE " +
                 "title = VALUES(title), " +
                 "price = VALUES(price), " +
