@@ -30,9 +30,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getRelatedProduct(Product product) throws IOException, InterruptedException {
-        CallApi callApi = new CallApi();
-        List<Product> productList = callApi.getAllProducts();
+    public List<Product> getRelatedProduct(Product product) {
+        List<Product> productList = productDAO.getAllProducts();
         List<Product> res = new ArrayList<>();
         for(Product x: productList){
             if(x.getCategory().equals(product.getCategory()) && x.getProductId()!=product.getProductId()){

@@ -23,7 +23,9 @@ public class UserService {
         userDao.AddUser(user);
         return true;
     }
-
+    public User searchUser(String username){
+        return userDao.SearchUserName(username);
+    }
     public User login(String username, String password) {
         User user = userDao.SearchUserName(username);
 

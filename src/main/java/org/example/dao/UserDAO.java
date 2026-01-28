@@ -76,6 +76,7 @@ public class UserDAO {
 
     private User mapResultSetToUser(ResultSet rs) throws SQLException {
         User user = new User();
+        user.setUserId(Integer.parseInt(rs.getString("user_id")));
         user.setUsername(rs.getString("username"));
         user.setPassword(rs.getString("password"));
         user.setEmail(rs.getString("email"));

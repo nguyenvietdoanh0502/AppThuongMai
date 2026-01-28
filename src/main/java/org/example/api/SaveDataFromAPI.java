@@ -33,7 +33,6 @@ public class SaveDataFromAPI {
                 "image = VALUES(image), " +
                 "rating_rate= VALUES(rating_rate), " +
                 "rating_count= VALUES(rating_count), " +
-                "quantity= VALUES(quantity), " +
                 "api_id= VALUES(api_id)"
                 ;
 
@@ -55,7 +54,6 @@ public class SaveDataFromAPI {
             }
             ps.executeBatch();
             conn.commit();
-            System.out.println("Đã đồng bộ xong " + apiList.size() + " sản phẩm!");
         } catch (SQLException e) {
             e.printStackTrace();
         }

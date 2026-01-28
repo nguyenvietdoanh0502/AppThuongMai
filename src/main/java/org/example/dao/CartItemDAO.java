@@ -3,6 +3,8 @@ package org.example.dao;
 
 import lombok.NoArgsConstructor;
 import org.example.model.CartItem;
+import org.example.model.dto.CartItemDTO;
+import org.example.model.dto.UserDTO;
 import org.example.utils.JDBCUtils;
 
 import java.io.IOException;
@@ -36,7 +38,9 @@ public class CartItemDAO {
         return cartItems;
     }
     public void addCartItem(CartItem cartItem){
-        String sql ="INSERT INTO CartItems (user_id,product_id,quantity) VALUES(?,?,?)";
+        String sql ="INSERT INTO cartitems (user_id, product_id, quantity) " +
+                "VALUES (?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)";
         try(
                 Connection conn = JDBCUtils.connectionDB();
                 PreparedStatement ps = conn.prepareStatement(sql);
@@ -50,63 +54,10 @@ public class CartItemDAO {
         }
     }
 
-    public void increaseQuantity(int productId){
-        String sql = "SELECT * FROM CartItems WHERE product_id=?";
-        int newQuantity = 0;
-        try(
-                Connection conn = JDBCUtils.connectionDB();
-                PreparedStatement ps = conn.prepareStatement(sql);
-                ){
-            ps.setString(1, String.valueOf(productId));
-            ResultSet res = ps.executeQuery();
-            if(res.next()){
-                newQuantity = res.getInt("quantity")+1;
-            }
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
-        String sql1 = "UPDATE CartItems SET quantity = ? WHERE product_id = ?";
-        try(
-                Connection conn = JDBCUtils.connectionDB();
-                PreparedStatement ps = conn.prepareStatement(sql1);
-        ){
-            ps.setString(2, String.valueOf(productId));
-            ps.setString(1, String.valueOf(newQuantity));
-            ps.executeUpdate();
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
 
-    }
-    public void decreaseQuantity(int productId){
-        String sql = "SELECT * FROM CartItems WHERE product_id=?";
-        int newQuantity = 0;
-        try(
-                Connection conn = JDBCUtils.connectionDB();
-                PreparedStatement ps = conn.prepareStatement(sql);
-        ){
-            ps.setString(1, String.valueOf(productId));
-            ResultSet res = ps.executeQuery();
-            if(res.next()){
-                newQuantity = res.getInt("quantity")-1;
-            }
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
-        String sql1 = "UPDATE CartItems SET quantity = ? WHERE product_id = ?";
-        try(
-                Connection conn = JDBCUtils.connectionDB();
-                PreparedStatement ps = conn.prepareStatement(sql1);
-        ){
-            ps.setString(2, String.valueOf(productId));
-            ps.setString(1, String.valueOf(newQuantity));
-            ps.executeUpdate();
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
-    }
-    public void removeCartItem(CartItem cartItem){
-        String sql = "DELETE FROM CartItems WHERE cart-item-id=?";
+
+    public void removeCartItem(CartItemDTO cartItem){
+        String sql = "DELETE FROM CartItems WHERE cart_item_id=?";
         try(
                 Connection conn = JDBCUtils.connectionDB();
                 PreparedStatement ps = conn.prepareStatement(sql);
@@ -131,5 +82,50 @@ public class CartItemDAO {
         }catch (SQLException e){
             e.printStackTrace();
         }
+    }
+
+    public int countCartItem(){
+        String sql = "SELECT SUM(quantity) FROM CartItems WHERE user_id = ?";
+        try(
+                Connection conn = JDBCUtils.connectionDB();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ){
+            ps.setString(1, String.valueOf(UserDTO.getInstance().getUserId()));
+            ResultSet res = ps.executeQuery();
+            if (res.next()) {
+                return res.getInt(1);
+            }
+        }catch (SQLException e){
+            e.printStackTrace();;
+        }
+        return 0;
+    }
+    public List<CartItemDTO> getCartItemInfo(){
+        String sql = "SELECT p.title, p.image, p.price, c.quantity,c.cart_item_id,c.user_id,c.product_id " +
+                "FROM cartitems c " +
+                "JOIN products p ON c.product_id = p.product_id " +
+                "WHERE c.user_id = ? AND p.is_deleted = 0";
+        List<CartItemDTO> cartItemDTOS = new ArrayList<>();
+        try(
+                Connection conn = JDBCUtils.connectionDB();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ){
+            ps.setString(1, String.valueOf(UserDTO.getInstance().getUserId()));
+            ResultSet res = ps.executeQuery();
+            while(res.next()){
+                CartItemDTO cartItemDTO = new CartItemDTO();
+                cartItemDTO.setCartItemId(res.getInt("cart_item_id"));
+                cartItemDTO.setUserId(res.getInt("user_id"));
+                cartItemDTO.setProductId(res.getInt("product_id"));
+                cartItemDTO.setQuantity(res.getInt("quantity"));
+                cartItemDTO.setTitle(res.getString("title"));
+                cartItemDTO.setPrice(res.getDouble("price"));
+                cartItemDTO.setImage(res.getString("image"));
+                cartItemDTOS.add(cartItemDTO);
+            }
+        }catch (SQLException e){
+            e.printStackTrace();;
+        }
+        return cartItemDTOS;
     }
 }
