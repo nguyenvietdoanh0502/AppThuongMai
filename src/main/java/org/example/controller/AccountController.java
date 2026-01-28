@@ -17,6 +17,7 @@ import org.example.constant.Regex;
 import org.example.model.Role;
 import org.example.model.User;
 import org.example.model.dto.RegisterDTO;
+import org.example.model.dto.UserDTO;
 import org.example.service.UserService;
 import jakarta.validation.Validator;
 
@@ -133,6 +134,8 @@ public class AccountController {
         if (user != null) {
             showAlert("Thành công", "Đăng nhập thành công!");
             RoleAssignment(user);
+
+            UserDTO.login(user.getUserId(), user.getUsername());
             if(user.getRole()== Role.USER){
                 switchToUserView();
             }
@@ -162,6 +165,8 @@ public class AccountController {
         String res = register(txtUsername.getText(), txtPassword.getText(), txtEmail.getText());
         if (res.equals("Thành công")) {
             showAlert("Thành công", "Đăng ký thành công!");
+            User user = userService.searchUser(txtUsername.getText());
+            UserDTO.login(user.getUserId(), user.getUsername());
             switchToUserView();
 
         } else {

@@ -39,7 +39,7 @@
                     </children>
                 </HBox>
                 <Region VBox.vgrow="ALWAYS" />
-                <Button maxWidth="Infinity" mnemonicParsing="false" style="-fx-background-color: black; -fx-text-fill: white; -fx-cursor: hand;" text="Add to Cart" />
+                <Button fx:id="btnAdd" onAction="#handleBtnAdd" maxWidth="Infinity" mnemonicParsing="false" style="-fx-background-color: black; -fx-text-fill: white; -fx-cursor: hand;" text="Add to Cart" />
             </children>
             <padding>
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

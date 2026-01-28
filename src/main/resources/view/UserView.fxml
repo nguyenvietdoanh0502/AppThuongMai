@@ -11,12 +11,16 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<GridPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.UserViewController">
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Region?>
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.UserViewController">
+<GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 
     <columnConstraints>
         <ColumnConstraints fx:id="colSidebar" hgrow="NEVER" maxWidth="300.0" minWidth="200.0" prefWidth="250.0" />
@@ -55,9 +59,19 @@
                <children>
                    <FontIcon iconLiteral="fas-bell" iconSize="20" />
                    <FontIcon iconLiteral="fas-heart" iconSize="20" />
-                   <FontIcon iconLiteral="fas-shopping-bag" iconSize="20" />
-                  <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="76.0" style="-fx-background-color: #ffffff; -fx-border-radius: 4; -fx-border-color: #000000;" text="Register" />
-                  <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="76.0" style="-fx-background-color: #000000; -fx-border-radius: 4;" text="Login" textFill="WHITE" />
+                   <StackPane onMouseClicked="#toggleCart">
+                       <children>
+                           <FontIcon iconLiteral="fas-shopping-bag" iconSize="20" />
+
+                           <Label fx:id="lblCartCount" alignment="CENTER" minHeight="11.0" minWidth="9.0" prefHeight="11.0" prefWidth="9.0" style="-fx-background-color: #ff0000; -fx-text-fill: white; -fx-font-size: px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-min-width: 16px; -fx-min-height: 16px; -fx-max-height: 16px; -fx-max-width: 16px; -fx-padding: 0;" styleClass="cart-badge" text="2">
+                               <StackPane.margin>
+                                   <Insets right="-8.0" top="-8.0" />
+                               </StackPane.margin>
+                           </Label>
+                       </children>
+                   </StackPane>
+                  <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="76.0" style="-fx-background-color: #ffffff; -fx-border-radius: 4; -fx-border-color: #000000;" text="User" />
+                  <Button fx:id="lblLogout" onAction="#handleBtnLogout" mnemonicParsing="false" prefHeight="30.0" prefWidth="76.0" style="-fx-background-color: #000000; -fx-border-radius: 4;" text="Logout" textFill="WHITE" />
                </children>
             </HBox>
 
@@ -127,3 +141,44 @@
 
     </children>
 </GridPane>
+    <VBox fx:id="cartOverlay" visible="false"
+          AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="70.0"
+          prefWidth="360.0" maxHeight="500.0" spacing="0.0"
+          style="-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5); -fx-background-radius: 8; -fx-border-radius: 8;">
+
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+
+        <children>
+            <Label fx:id="lblOverlayHeader"  style="-fx-font-size: 15px; -fx-text-fill: #333;">
+                <VBox.margin>
+                    <Insets bottom="15.0" />
+                </VBox.margin>
+            </Label>
+
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="300.0" style="-fx-background-color: transparent; -fx-background: white; -fx-border-color: transparent;">
+                <content>
+                    <VBox fx:id="cartItemsContainer" spacing="0.0" style="-fx-background-color: white;" />
+                </content>
+            </ScrollPane>
+
+            <VBox spacing="12.0">
+                <VBox.margin>
+                    <Insets top="15.0" />
+                </VBox.margin>
+
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Subtotal" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #000;" />
+                    <Region HBox.hgrow="ALWAYS" /> <Label fx:id="lblSubtotal" text="99" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #000;" />
+                </HBox>
+
+                <Button text="View Cart" maxWidth="Infinity"
+                        style="-fx-background-color: white; -fx-border-color: #333; -fx-border-radius: 4; -fx-text-fill: #333; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 8;" />
+
+                <Button text="Checkout" maxWidth="Infinity"
+                        style="-fx-background-color: #111; -fx-text-fill: white; -fx-background-radius: 4; -fx-font-size: 14px; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 9;" />
+            </VBox>
+        </children>
+    </VBox>
+</AnchorPane>
