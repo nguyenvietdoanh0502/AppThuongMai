@@ -34,4 +34,14 @@ public class CartItemServiceImpl implements CartItemService {
         return cartItemDAO.getCartItemInfo();
     }
 
+    @Override
+    public void increaseQuantity(int productId,int newQty) {
+        cartItemDAO.increaseQuantity(productId,newQty);
+    }
+
+    @Override
+    public void decreaseQuantity(int productId) {
+        cartItemDAO.decreaseQuantity(productId);
+    }
+
 }

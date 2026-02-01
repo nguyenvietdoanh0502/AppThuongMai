@@ -11,4 +11,6 @@ public interface CartItemService {
     void addCartItem(CartItem cartItem);
     void removeCartItem(CartItemDTO cartItem);
     List<CartItemDTO> getCartItemInfo();
+    void increaseQuantity(int productId,int newQty);
+    void decreaseQuantity(int productId);
 }

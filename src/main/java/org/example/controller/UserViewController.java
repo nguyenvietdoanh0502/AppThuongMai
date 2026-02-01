@@ -45,6 +45,7 @@ public class UserViewController implements Initializable {
     public VBox cartItemsContainer;
     public Label lblSubtotal;
     public Label lblOverlayHeader;
+    public Button btnCheckout;
     private Node homeViewNode;
     public ScrollPane contentArea;
     public VBox sidebarFilter;
@@ -235,17 +236,28 @@ public class UserViewController implements Initializable {
     }
     public void handleBtnLogout(ActionEvent event){
         Animation.playClickAnimation(lblLogout);
-        UserDTO.logout();
-        try {
-            Parent loginView = FXMLLoader.load(getClass().getResource("/view/AccountView.fxml"));
-            Scene loginScene = new Scene(loginView,1050,700);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(loginScene);
-            stage.centerOnScreen();
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Xác nhận đăng xuất");
+        alert.setHeaderText(null);
+        alert.setContentText("Bạn có chắc chắn muốn đăng xuất?");
+        ButtonType buttonTypeYes = new ButtonType("Có", ButtonBar.ButtonData.YES);
+        ButtonType buttonTypeNo = new ButtonType("Không", ButtonBar.ButtonData.NO);
+        alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == buttonTypeYes) {
+            UserDTO.logout();
+            try {
+                Parent loginView = FXMLLoader.load(getClass().getResource("/view/AccountView.fxml"));
+                Scene loginScene = new Scene(loginView,1050,700);
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(loginScene);
+                stage.centerOnScreen();
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
     }
     private void collapseSidebar() {
         sidebarFilter.setVisible(false);
@@ -309,6 +321,26 @@ public class UserViewController implements Initializable {
             cartOverlay.setVisible(true);
         } else {
             cartOverlay.setVisible(false);
+        }
+    }
+    @FXML
+    public void handleCheckout(){
+        Animation.playClickAnimation(btnCheckout);
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Checkout.fxml"));
+            Parent checkoutView = loader.load();
+            contentArea.setContent(checkoutView);
+            collapseSidebar();
+            cartOverlay.setVisible(false);
+            CheckoutController checkoutController = loader.getController();
+            checkoutController.setOnBackAction(()->{
+                restoreSidebar();
+                if (homeViewNode != null) {
+                    contentArea.setContent(homeViewNode);
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
