@@ -1,10 +1,14 @@
-package org.example.controller.Login_ui;
+package org.example.controller.login_controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import org.example.constant.Animation;
+import org.example.constant.Regex;
 import org.example.service.UserService;
+
+import java.util.regex.Pattern;
 
 public class ForgotPasswordController {
 
@@ -14,13 +18,19 @@ public class ForgotPasswordController {
     @FXML private PasswordField txtNewPassword, txtConfirmPassword;
 
     private final UserService userService = new UserService();
-
-    // Bước 1: Khớp với onAction="#handleVerifyAccount" trong FXML
     @FXML
     private void handleVerifyAccount(ActionEvent event) {
         String username = txtUsername.getText().trim();
         String email = txtEmail.getText().trim();
 
+        if(txtUsername.getText().isEmpty()){
+            Animation.showAlert("Lỗi","Vui lòng điền đầy đủ Username!");
+            return;
+        }
+        if(txtEmail.getText().isEmpty()){
+            Animation.showAlert("Lỗi","Vui lòng điền đầy đủ Email!");
+            return;
+        }
         if (userService.checkAccountExist(username, email)) {
             step1Box.setVisible(false);
             step1Box.setManaged(false);
@@ -31,14 +41,20 @@ public class ForgotPasswordController {
             showAlert(Alert.AlertType.ERROR, "Lỗi", "Thông tin tài khoản không đúng!");
         }
     }
-
-    // Bước 2: KHỚP CHÍNH XÁC với onAction="#handleResetPassword" trong FXML bạn gửi
     @FXML
     private void handleResetPassword(ActionEvent event) {
         String newPass = txtNewPassword.getText();
         String confirm = txtConfirmPassword.getText();
         String email = txtEmail.getText().trim();
-
+        if(txtNewPassword.getText().isEmpty()){
+            Animation.showAlert("Lỗi","Vui lòng điền đầy đủ Password!");
+            return;
+        }
+        Pattern PASS_PATTERN = Pattern.compile(Regex.PASSWORD_PATTERN);
+        if(!PASS_PATTERN.matcher(txtNewPassword.getText()).matches()){
+            Animation.showAlert("Lỗi","Mật khẩu phải bao gồm chữ viết hoa, chữ viết thường, số, ký tự đặc biệt!");
+            return;
+        }
         if (newPass.isEmpty() || !newPass.equals(confirm)) {
             showAlert(Alert.AlertType.WARNING, "Lỗi", "Mật khẩu không khớp!");
             return;

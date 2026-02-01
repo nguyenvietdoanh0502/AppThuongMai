@@ -1,4 +1,4 @@
-package org.example.controller.Login_ui;
+package org.example.controller.login_controller;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,8 +15,6 @@ public class NavigationManager {
      * @param event Sự kiện từ nút bấm để lấy Stage hiện tại
      * @param fxmlFile Tên file FXML muốn chuyển đến (vd: "LoginView.fxml")
      */
-    // Trong NavigationManager.java
-    // Trong NavigationManager.java
     public static void switchScene(ActionEvent event, String fxmlFile) {
         try {
             String path = "/view/" + fxmlFile;
@@ -24,15 +22,11 @@ public class NavigationManager {
             Parent root = loader.load();
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            // Giữ lại kích thước hiện tại để tránh cửa sổ bị nhảy size
             double width = stage.getScene().getWidth();
             double height = stage.getScene().getHeight();
             Scene scene = new Scene(root, width, height);
 
             stage.setScene(scene);
-
-            // Hiệu ứng Fade mượt mà như bạn đã viết
             root.setOpacity(0);
             javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(javafx.util.Duration.millis(500), root);
             ft.setFromValue(0.0);
@@ -42,7 +36,7 @@ public class NavigationManager {
             stage.show();
         } catch (IOException e) {
             System.err.println("Lỗi load FXML: " + e.getMessage());
-            e.printStackTrace(); // Nên in stack trace để dễ debug khi lỗi đường dẫn
+            e.printStackTrace();
         }
     }
 }

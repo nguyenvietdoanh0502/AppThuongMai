@@ -247,7 +247,7 @@ public class UserViewController implements Initializable {
         if (result.isPresent() && result.get() == buttonTypeYes) {
             UserDTO.logout();
             try {
-                Parent loginView = FXMLLoader.load(getClass().getResource("/view/AccountView.fxml"));
+                Parent loginView = FXMLLoader.load(getClass().getResource("/view/WelcomeView.fxml"));
                 Scene loginScene = new Scene(loginView,1050,700);
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.setScene(loginScene);

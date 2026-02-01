@@ -1,4 +1,4 @@
-package org.example.controller.Login_ui;
+package org.example.controller.login_controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -6,6 +6,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import org.example.model.dto.UserDTO;
 import org.example.service.UserService;
 import org.example.model.User; // Import model User để hứng dữ liệu trả về
 
@@ -36,12 +37,12 @@ public class LoginController {
 
         if (loggedInUser != null) {
             System.out.println("Đăng nhập thành công! Vai trò: " + loggedInUser.getRole());
-
-            // KIỂM TRA ROLE ĐỂ CHUYỂN TRANG ĐÚNG
+            UserDTO.login(loggedInUser.getUserId(), loggedInUser.getUsername());
             if ("ADMIN".equalsIgnoreCase(String.valueOf(loggedInUser.getRole()))) {
                 System.out.println("Đang chuyển hướng tới giao diện Quản trị...");
                 NavigationManager.switchScene(event, "AdminView.fxml");
             } else {
+
                 System.out.println("Đang chuyển hướng tới giao diện Người dùng...");
                 NavigationManager.switchScene(event, "UserView.fxml");
             }
@@ -77,7 +78,6 @@ public class LoginController {
         NavigationManager.switchScene(event, "ForgotPasswordView.fxml");
     }
 
-    // Hàm hiển thị Alert hỗ trợ xử lý lỗi Alert đỏ
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

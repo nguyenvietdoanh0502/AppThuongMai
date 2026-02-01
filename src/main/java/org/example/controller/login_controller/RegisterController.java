@@ -1,9 +1,16 @@
-package org.example.controller.Login_ui;
+package org.example.controller.login_controller;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import org.example.model.dto.RegisterDTO;
 import org.example.service.UserService;
+
+import java.util.Set;
 
 public class RegisterController {
 
@@ -22,7 +29,6 @@ public class RegisterController {
 
     @FXML
     private void handleSignUp(ActionEvent event) {
-        // Đồng bộ text từ ô Visible sang ô Password chính trước khi lưu
         if (checkShowPassword.isSelected()) {
             txtPassword.setText(txtPasswordVisible.getText());
             txtConfirmPassword.setText(txtConfirmPasswordVisible.getText());
@@ -33,8 +39,12 @@ public class RegisterController {
         String confirm = txtConfirmPassword.getText();
         String username = txtUsername.getText();
 
-        if (email.isEmpty() || password.isEmpty() || username.isEmpty()) {
-            showAlert("Lỗi", "Vui lòng nhập đầy đủ thông tin!");
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        RegisterDTO dto = new RegisterDTO(txtEmail.getText(), txtPassword.getText(),txtConfirmPassword.getText(),txtUsername.getText());
+        Set<ConstraintViolation<RegisterDTO>> violations = validator.validate(dto);
+        if (!violations.isEmpty()) {
+            showAlert("Lỗi", violations.iterator().next().getMessage());
             return;
         }
 
@@ -47,7 +57,7 @@ public class RegisterController {
 
         if (isSuccess) {
             showAlert("Thành công", "Đăng ký tài khoản thành công!");
-            NavigationManager.switchScene(event, "LoginView.fxml");
+            NavigationManager.switchScene(event, "UserView.fxml");
         } else {
             showAlert("Thất bại", "Tài khoản/Email đã tồn tại hoặc lỗi hệ thống!");
         }
@@ -57,9 +67,7 @@ public class RegisterController {
     private void togglePassword(ActionEvent event) {
         boolean isShow = checkShowPassword.isSelected();
 
-        // Hoán đổi cho ô mật khẩu
         updateVisibility(txtPassword, txtPasswordVisible, isShow);
-        // Hoán đổi cho ô xác nhận
         updateVisibility(txtConfirmPassword, txtConfirmPasswordVisible, isShow);
     }
 
@@ -81,7 +89,6 @@ public class RegisterController {
 
     @FXML
     private void handleBackToLogin(ActionEvent event) {
-        // Chú ý: Đã sửa tên file từ "Ưelcome" thành "Welcome"
         NavigationManager.switchScene(event, "WelcomeView.fxml");
     }
 

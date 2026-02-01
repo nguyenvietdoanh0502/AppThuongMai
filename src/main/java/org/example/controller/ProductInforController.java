@@ -128,14 +128,18 @@ public class ProductInforController implements Initializable {
     }
     @FXML
     public void handleBtnCong(){
-
+        Animation.playClickAnimation(btnCong);
         if(Integer.parseInt(lblQty.getText())<currentProduct.getQuantity()){
             int quantity = Integer.parseInt(lblQty.getText());
             lblQty.setText(String.valueOf(quantity + 1));
         }
+        else{
+            Animation.showAlert("Lỗi","Vượt quá số lượng hàng còn trong kho!");
+        }
     }
     @FXML
     public void handleBtnTru(){
+        Animation.playClickAnimation(btnTru);
         if(Integer.parseInt(lblQty.getText())>1){
             int quantity = Integer.parseInt(lblQty.getText());
             lblQty.setText(String.valueOf(quantity - 1));
