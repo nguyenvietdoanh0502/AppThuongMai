@@ -10,8 +10,19 @@ import static org.example.model.Role.ADMIN;
 public class UserService {
     private final UserDAO userDao = new UserDAO();
 
+    public void initDefaultAdmin() {
+        String defaultAdminName = "admin_root";
+        if (userDao.SearchUserName(defaultAdminName) == null) {
+            // Luôn lưu mật khẩu đã mã hóa vào DB
+            String hashedPw = PasswordUtils.hashPassword("admin123");
+            User admin = new User(defaultAdminName, hashedPw, "admin@system.com", ADMIN);
+            userDao.AddUser(admin);
+            System.out.println(">>> Đã tạo tài khoản Admin mặc định (admin_root/admin123)");
+        }
+    }
+
     public boolean register(String username, String password, String email) {
-        if (username.equalsIgnoreCase("AdNguyenHien") || email.equalsIgnoreCase("hien2k6tta@gmail.com")) {
+        if (username.equalsIgnoreCase("admin") && password.equals("admin123") && email.equalsIgnoreCase("admin@system.com")) {
             return false;
         }
 
@@ -28,17 +39,11 @@ public class UserService {
     }
     public User login(String username, String password) {
         User user = userDao.SearchUserName(username);
+        if (user == null) {
+            return null;
+        }
 
-        if (user == null)  {
-            return null;
-        }
-        if(user.getRole()==ADMIN){
-            if(user.getPassword().equals(password)){
-                return user;
-            }
-            return null;
-        }
-        if(!PasswordUtils.checkPassword(password,user.getPassword())){
+        if (!PasswordUtils.checkPassword(password, user.getPassword())) {
             return null;
         }
         return user;

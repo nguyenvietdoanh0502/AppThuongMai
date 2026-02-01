@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="25" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.Login_ui.LoginController">
+    <padding>
+        <Insets bottom="40" left="40" right="40" top="40" />
+    </padding>
+
+    <VBox alignment="CENTER" spacing="10">
+        <Label style="-fx-text-fill: #1F41BB; -fx-font-size: 30px; -fx-font-weight: bold;" text="Login here" />
+        <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Welcome back! &#10;Let's go hunting for deals!" textAlignment="CENTER" />
+    </VBox>
+
+    <VBox spacing="18" style="-fx-max-width: 350;">
+        <TextField fx:id="txtUsername" prefHeight="55" promptText="User" style="-fx-background-color: #F1F4FF; -fx-background-radius: 10; -fx-border-color: #1F41BB; -fx-border-radius: 10; -fx-border-width: 2;" />
+
+        <VBox spacing="10">
+            <StackPane>
+                <PasswordField fx:id="txtPassword" prefHeight="55" promptText="Password" style="-fx-background-color: #F1F4FF; -fx-background-radius: 10; -fx-padding: 0 15 0 15;" />
+                <TextField fx:id="txtPasswordVisible" managed="false" prefHeight="55" style="-fx-background-color: #F1F4FF; -fx-background-radius: 10; -fx-padding: 0 15 0 15;" visible="false" />
+            </StackPane>
+      
+          <CheckBox fx:id="checkShowPassword" onAction="#togglePassword" style="-fx-font-size: 11px;" text="Hiện mật khẩu" />
+
+            <HBox alignment="CENTER_RIGHT">
+                <Hyperlink onAction="#handleForgot" style="-fx-text-fill: #1F41BB; -fx-font-weight: bold; -fx-font-size: 12px;" text="Forgot your password?" />
+            </HBox>
+        </VBox>
+
+        <Button maxWidth="Infinity" onAction="#handleLogin" prefHeight="55" style="-fx-background-color: #1F41BB; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 18px; -fx-background-radius: 10; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(31,65,187,0.4), 10, 0, 0, 5);" text="Sign in" />
+
+        <HBox alignment="CENTER" spacing="5">
+            <Button onAction="#handleBack" style="-fx-background-color: transparent; -fx-text-fill: #494949; -fx-font-weight: bold;" text="Create new account" />
+        </HBox>
+
+        <VBox alignment="CENTER" spacing="15">
+            <Label style="-fx-text-fill: #1F41BB; -fx-font-weight: bold;" text="Or continue with" />
+            <HBox alignment="CENTER" spacing="15">
+            <ImageView fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../asset/google.jpg" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../asset/facebook.png" />
+               </image>
+            </ImageView>
+            </HBox>
+        </VBox>
+    </VBox>
+</VBox>
