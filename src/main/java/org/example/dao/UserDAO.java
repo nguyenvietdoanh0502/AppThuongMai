@@ -79,7 +79,19 @@ public class UserDAO {
         user.setUsername(rs.getString("username"));
         user.setPassword(rs.getString("password"));
         user.setEmail(rs.getString("email"));
-        user.setRole(Role.valueOf(rs.getString("role")));
+
+        String roleStr = rs.getString("role");
+        if (roleStr != null) {
+            try {
+                // Ép kiểu chuẩn để so khớp với Enum ADMIN hoặc USER
+                user.setRole(Role.valueOf(roleStr.trim().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                System.out.println("Cảnh báo: Role trong DB không hợp lệ, gán mặc định USER");
+                user.setRole(Role.USER);
+            }
+        } else {
+            user.setRole(Role.USER);
+        }
         return user;
     }
 }

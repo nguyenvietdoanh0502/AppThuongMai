@@ -5,9 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.example.api.SaveDataFromAPI;
+import org.example.service.UserService; // Thêm import này
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
@@ -15,13 +14,20 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        // --- BƯỚC THÊM MỚI: Khởi tạo Admin mặc định ---
+        UserService userService = new UserService();
+        userService.initDefaultAdmin();
+        // --------------------------------------------
+
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/view/AccountView.fxml")
+                getClass().getResource("/view/WelcomeView.fxml")
         );
-        Scene scene = new Scene(loader.load(),1050,700);
+        Scene scene = new Scene(loader.load(), 1050, 700);
         stage.setScene(scene);
-        stage.setTitle("Test");
+        stage.setTitle("Hệ thống bán hàng");
         stage.show();
+
+        // Luồng tải dữ liệu từ API vẫn giữ nguyên
         new Thread(() -> {
             try {
                 SaveDataFromAPI e = new SaveDataFromAPI();
