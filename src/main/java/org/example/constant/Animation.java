@@ -3,6 +3,7 @@ package org.example.constant;
 import javafx.animation.ScaleTransition;
 import javafx.animation.SequentialTransition;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.util.Duration;
 
 public class Animation {
@@ -15,5 +16,12 @@ public class Animation {
         st2.setToY(1.0);
         SequentialTransition sequentialTransition = new SequentialTransition(st1, st2);
         sequentialTransition.play();
+    }
+    public static void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

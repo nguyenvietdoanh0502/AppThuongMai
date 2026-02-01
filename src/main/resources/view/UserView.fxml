@@ -157,7 +157,7 @@
                 </VBox.margin>
             </Label>
 
-            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="300.0" style="-fx-background-color: transparent; -fx-background: white; -fx-border-color: transparent;">
+            <ScrollPane vbarPolicy="NEVER" fitToWidth="true" hbarPolicy="NEVER" prefHeight="300.0" style="-fx-background-color: transparent; -fx-background: white; -fx-border-color: transparent;">
                 <content>
                     <VBox fx:id="cartItemsContainer" spacing="0.0" style="-fx-background-color: white;" />
                 </content>
@@ -176,7 +176,7 @@
                 <Button text="View Cart" maxWidth="Infinity"
                         style="-fx-background-color: white; -fx-border-color: #333; -fx-border-radius: 4; -fx-text-fill: #333; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 8;" />
 
-                <Button text="Checkout" maxWidth="Infinity"
+                <Button fx:id="btnCheckout" onAction="#handleCheckout" text="Checkout" maxWidth="Infinity"
                         style="-fx-background-color: #111; -fx-text-fill: white; -fx-background-radius: 4; -fx-font-size: 14px; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 9;" />
             </VBox>
         </children>

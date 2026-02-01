@@ -101,7 +101,15 @@ public class CartItemDAO {
         return 0;
     }
     public List<CartItemDTO> getCartItemInfo(){
-        String sql = "SELECT p.title, p.image, p.price, c.quantity,c.cart_item_id,c.user_id,c.product_id " +
+        String sql = "SELECT p.product_id, " +
+                "       p.title, " +
+                "       p.image, " +
+                "       p.price, " +
+                "       c.cart_item_id, " +
+                "       c.user_id, " +
+                "       c.product_id, " +
+                "       c.quantity AS cart_qty, " +
+                "       p.quantity AS stock_qty " +
                 "FROM cartitems c " +
                 "JOIN products p ON c.product_id = p.product_id " +
                 "WHERE c.user_id = ? AND p.is_deleted = 0";
@@ -117,7 +125,8 @@ public class CartItemDAO {
                 cartItemDTO.setCartItemId(res.getInt("cart_item_id"));
                 cartItemDTO.setUserId(res.getInt("user_id"));
                 cartItemDTO.setProductId(res.getInt("product_id"));
-                cartItemDTO.setQuantity(res.getInt("quantity"));
+                cartItemDTO.setQuantity(res.getInt("cart_qty"));
+                cartItemDTO.setStockQty(res.getInt("stock_qty"));
                 cartItemDTO.setTitle(res.getString("title"));
                 cartItemDTO.setPrice(res.getDouble("price"));
                 cartItemDTO.setImage(res.getString("image"));
@@ -127,5 +136,37 @@ public class CartItemDAO {
             e.printStackTrace();;
         }
         return cartItemDTOS;
+    }
+    public void increaseQuantity(int productId,int newQty){
+        String sql = "UPDATE cartitems " +
+                "SET quantity = ? " +
+                "WHERE user_id = ? AND product_id = ?;";
+        try(
+                Connection conn = JDBCUtils.connectionDB();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ){
+            ps.setString(1, String.valueOf(newQty));
+            ps.setString(2, String.valueOf(UserDTO.getInstance().getUserId()));
+            ps.setString(3, String.valueOf(productId));
+            ps.executeUpdate();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+    }
+    public void decreaseQuantity(int productId){
+        String sql = "UPDATE cartitems " +
+                "SET quantity = quantity - 1 " +
+                "WHERE user_id = ? AND product_id = ?;";
+        try(
+                Connection conn = JDBCUtils.connectionDB();
+                PreparedStatement ps = conn.prepareStatement(sql);
+        ){
+            ps.setString(1, String.valueOf(UserDTO.getInstance().getUserId()));
+            ps.setString(2, String.valueOf(productId));
+            ps.executeUpdate();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 }

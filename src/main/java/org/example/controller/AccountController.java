@@ -132,7 +132,7 @@ public class AccountController {
         }
         User user = login(txtUsername.getText(), txtPassword.getText());
         if (user != null) {
-            showAlert("Thành công", "Đăng nhập thành công!");
+//            showAlert("Thành công", "Đăng nhập thành công!");
             RoleAssignment(user);
 
             UserDTO.login(user.getUserId(), user.getUsername());
