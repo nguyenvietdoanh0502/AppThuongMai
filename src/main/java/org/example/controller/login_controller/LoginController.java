@@ -52,6 +52,27 @@ public class LoginController {
     }
 
     @FXML
+    private void handleGoogleLogin(ActionEvent event) {
+        try {
+            // Đường dẫn demo, thực tế bạn sẽ thay bằng link OAuth2 của Google
+            String url = "https://accounts.google.com/signin";
+
+            System.out.println(">>> Đang mở trình duyệt để đăng nhập Google...");
+
+            // Mở trình duyệt mặc định của hệ thống
+            java.awt.Desktop.getDesktop().browse(new java.net.URI(url));
+
+        } catch (Exception e) {
+            System.err.println("Không thể mở trình duyệt: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleFacebookLogin(ActionEvent event) {
+        System.out.println("Chức năng Facebook đang được tích hợp...");
+    }
+
+    @FXML
     private void togglePassword(ActionEvent event) {
         if (checkShowPassword.isSelected()) {
             txtPasswordVisible.setText(txtPassword.getText());
