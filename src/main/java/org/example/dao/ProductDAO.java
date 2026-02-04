@@ -15,22 +15,37 @@ import java.util.List;
 @NoArgsConstructor
 public class ProductDAO {
     public void addProduct(Product product) {
-        String sql = "INSERT INTO products (title,price,description,category_name,image,rating_rate,rating_count,quantity) VALUES(?,?,?,?,?,?,?,?)";
-        try (
-                Connection conn = JDBCUtils.connectionDB();
-                PreparedStatement ps = conn.prepareStatement(sql);
-        ) {
-            ps.setString(1, product.getTitle());
-            ps.setString(2, String.valueOf(product.getPrice()));
-            ps.setString(3, product.getDescription());
-            ps.setString(4, product.getCategory());
-            ps.setString(5, product.getImage());
-            ps.setString(6, String.valueOf(product.getRatingRate()));
-            ps.setString(7, String.valueOf(product.getRatingCount()));
-            ps.setString(8, String.valueOf(product.getQuantity()));
-            ps.executeUpdate();
+        String sqlCheckCat = "SELECT count(*) FROM categories WHERE name = ?";
+        String sqlInsertCat = "INSERT INTO categories (name) VALUES (?)";
+        String sqlInsertProduct = "INSERT INTO products (title,price,description,category_name,image,rating_rate,rating_count,quantity) VALUES(?,?,?,?,?,?,?,?)";
+        try(Connection conn = JDBCUtils.connectionDB()){
+            try(PreparedStatement psCheck = conn.prepareStatement(sqlCheckCat)){
+                psCheck.setString(1,product.getCategory());
+                ResultSet res = psCheck.executeQuery();
+                if(res.next()){
+                    int count = res.getInt(1);
+                    if(count==0){
+                        try(PreparedStatement psCat = conn.prepareStatement(sqlInsertCat)){
+                            psCat.setString(1,product.getCategory());
+                            psCat.executeUpdate();
+                        }
+                    }
+                }
+                try (PreparedStatement ps = conn.prepareStatement(sqlInsertProduct)) {
+                    ps.setString(1, product.getTitle());
+                    ps.setDouble(2, product.getPrice());
+                    ps.setString(3, product.getDescription());
+                    ps.setString(4, product.getCategory());
+                    ps.setString(5, product.getImage());
+                    ps.setDouble(6, product.getRatingRate());
+                    ps.setInt(7, product.getRatingCount());
+                    ps.setInt(8, product.getQuantity());
+
+                    ps.executeUpdate();
+                }
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -121,5 +136,19 @@ public class ProductDAO {
             e.printStackTrace();
         }
         return null;
+    }
+    public void reduceQuantityById(int id, int qty){
+        String sql = "UPDATE products SET quantity = quantity - ? WHERE product_id = ? AND is_deleted = 0";
+        try(
+                Connection conn = JDBCUtils.connectionDB();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ){
+            ps.setString(1, String.valueOf(qty));
+            ps.setString(2, String.valueOf(id));
+            ps.executeUpdate();
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 }

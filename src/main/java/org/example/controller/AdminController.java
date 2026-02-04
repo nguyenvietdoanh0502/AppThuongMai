@@ -29,7 +29,7 @@ public class AdminController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         System.out.println(">>> THÔNG BÁO: AdminController đã được kích hoạt thành công!");
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colId.setCellValueFactory(new PropertyValueFactory<>("productId"));
         colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         colPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
         colQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));

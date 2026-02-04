@@ -149,8 +149,14 @@ public class ProductInforController implements Initializable {
     public void handleBtnAddToCart(){
         Animation.playClickAnimation(btnAddtoCart);
         CartItem cartItem = new CartItem(UserDTO.getInstance().getUserId(),currentProduct.getProductId(),Integer.parseInt(lblQty.getText()));
-        cartItemService.addCartItem(cartItem);
-        lblQty.setText("1");
+        if(Integer.parseInt(lblQty.getText())>currentProduct.getQuantity()){
+            Animation.showAlert("Lỗi","Hết hàng!");
+        }
+        else{
+            cartItemService.addCartItem(cartItem);
+            lblQty.setText("1");
+        }
+
         if (onAddToCartCallback != null) {
             onAddToCartCallback.run();
         }

@@ -34,7 +34,7 @@ public class CategoryDAO {
                 PreparedStatement ps = conn.prepareStatement(sql);
                 ){
             ResultSet resultSet = ps.executeQuery();
-            if(resultSet.next()){
+            while (resultSet.next()){
                 Category category = new Category();
                 category.setCategoryId(resultSet.getInt("category_id"));
                 category.setName(resultSet.getString("name"));

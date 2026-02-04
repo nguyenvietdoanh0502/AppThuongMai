@@ -7,7 +7,9 @@ import jakarta.validation.ValidatorFactory;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import org.example.model.User;
 import org.example.model.dto.RegisterDTO;
+import org.example.model.dto.UserDTO;
 import org.example.service.UserService;
 
 import java.util.Set;
@@ -57,6 +59,8 @@ public class RegisterController {
 
         if (isSuccess) {
             showAlert("Thành công", "Đăng ký tài khoản thành công!");
+            User user = userService.searchUser(txtUsername.getText());
+            UserDTO.login(user.getUserId(), user.getUsername());
             NavigationManager.switchScene(event, "UserView.fxml");
         } else {
             showAlert("Thất bại", "Tài khoản/Email đã tồn tại hoặc lỗi hệ thống!");
