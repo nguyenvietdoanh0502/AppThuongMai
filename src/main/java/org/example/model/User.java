@@ -3,17 +3,20 @@ package org.example.model;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class User {
     private int userId;
     private String username;
     private String password;
     private String email;
-
+    private double money;
     private Role role;
 
     public User() {

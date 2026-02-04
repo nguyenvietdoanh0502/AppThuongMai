@@ -62,4 +62,10 @@ public class UserService {
         String hashedPassword = PasswordUtils.hashPassword(newPassword);
         return userDao.updatePassword(email, hashedPassword);
     }
+    public User findUserById(int id){
+        return userDao.findUserById(id);
+    }
+    public void  deductMoneyById(int id, double total){
+        userDao.deductMoneyById(id,total);
+    }
 }

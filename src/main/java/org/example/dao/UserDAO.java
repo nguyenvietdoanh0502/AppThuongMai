@@ -95,4 +95,41 @@ public class UserDAO {
         }
         return user;
     }
+    public User findUserById(int id){
+        String sql = "SELECT * FROM users WHERE user_id = ?";
+        User user = new User();
+        try(
+                Connection conn = JDBCUtils.connectionDB();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ){
+            ps.setString(1, String.valueOf(id));
+            ResultSet res = ps.executeQuery();
+            if(res.next()){
+                user.setMoney(res.getDouble("money"));
+                user.setUserId(res.getInt("user_id"));
+                user.setPassword(res.getString("password"));
+                user.setRole(Role.valueOf(res.getString("role")));
+                user.setEmail(res.getString("email"));
+                user.setUsername(res.getString("username"));
+            }
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+        return user;
+    }
+    public void deductMoneyById(int id,double total){
+        String sql = "UPDATE users SET money = money - ? WHERE user_id = ?";
+        try(
+                Connection conn = JDBCUtils.connectionDB();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ){
+            ps.setString(1, String.valueOf(total));
+            ps.setString(2, String.valueOf(id));
+            ps.executeUpdate();
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
 }

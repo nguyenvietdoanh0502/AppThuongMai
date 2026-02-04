@@ -14,10 +14,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        // --- BƯỚC THÊM MỚI: Khởi tạo Admin mặc định ---
         UserService userService = new UserService();
         userService.initDefaultAdmin();
-        // --------------------------------------------
 
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/view/WelcomeView.fxml")
@@ -27,7 +25,6 @@ public class Main extends Application {
         stage.setTitle("Hệ thống bán hàng");
         stage.show();
 
-        // Luồng tải dữ liệu từ API vẫn giữ nguyên
         new Thread(() -> {
             try {
                 SaveDataFromAPI e = new SaveDataFromAPI();

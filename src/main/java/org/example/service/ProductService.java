@@ -8,4 +8,5 @@ import java.util.List;
 public interface ProductService {
     List<Product> getAllProduct();
     List<Product> getRelatedProduct(Product product) throws IOException, InterruptedException;
+    void reduceQuantityById(int id, int qty);
 }

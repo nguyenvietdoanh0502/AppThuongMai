@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" spacing="25" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.login_controller.WelcomeController">
+<VBox alignment="TOP_CENTER" spacing="25" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.login_controller.WelcomeController">
     <padding>
         <Insets bottom="50" left="40" right="40" top="60" />
     </padding>

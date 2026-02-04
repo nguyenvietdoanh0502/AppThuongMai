@@ -40,4 +40,9 @@ public class ProductServiceImpl implements ProductService {
         }
         return res;
     }
+
+    @Override
+    public void reduceQuantityById(int id, int qty) {
+        productDAO.reduceQuantityById(id,qty);
+    }
 }

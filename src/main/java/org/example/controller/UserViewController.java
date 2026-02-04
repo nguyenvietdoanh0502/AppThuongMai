@@ -25,8 +25,10 @@ import org.example.model.Product;
 import org.example.model.dto.CartItemDTO;
 import org.example.model.dto.UserDTO;
 import org.example.service.CartItemService;
+import org.example.service.CategoryService;
 import org.example.service.ProductService;
 import org.example.service.impl.CartItemServiceImpl;
+import org.example.service.impl.CategoryServiceImpl;
 import org.example.service.impl.ProductServiceImpl;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -46,6 +48,7 @@ public class UserViewController implements Initializable {
     public Label lblSubtotal;
     public Label lblOverlayHeader;
     public Button btnCheckout;
+    public StackPane cartIconContainer;
     private Node homeViewNode;
     public ScrollPane contentArea;
     public VBox sidebarFilter;
@@ -62,10 +65,12 @@ public class UserViewController implements Initializable {
     private Set<String> selectedCategories = new HashSet<>();
     private String currentSearchKeyword = "";
     private CartItemService cartItemService = new CartItemServiceImpl();
+    private CategoryService categoryService = new CategoryServiceImpl();
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         List<Product> products = productService.getAllProduct();
+        products.removeIf(x -> x.getQuantity() < 1);
         updateCount();
         loadProducts(products);
         renderCategories(products);
@@ -159,12 +164,8 @@ public class UserViewController implements Initializable {
         loadProducts(filteredList);
     }
     private void renderCategories(List<Product> products){
-        List<Category> categories = null;
-        try{
-            categories = apiProduct.getAllCategories();
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        List<Category> categories = categoryService.getAllCategories();
+
         categoryContainer.getChildren().clear();
         for(Category cat: categories){
             HBox row = new HBox();
@@ -225,6 +226,7 @@ public class UserViewController implements Initializable {
                 restoreSidebar();
                 if (homeViewNode != null) {
                     contentArea.setContent(homeViewNode);
+
                 }
                 txtSearch.clear();
             });
@@ -301,7 +303,7 @@ public class UserViewController implements Initializable {
             btnDelete.setGraphic(trashIcon);
             btnDelete.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
             btnDelete.setOnAction(e -> {
-                cartItemService.removeCartItem(item);
+                cartItemService.removeCartItem(item.getCartItemId());
                 loadCartData();
                 updateCount();
             });
@@ -337,10 +339,29 @@ public class UserViewController implements Initializable {
                 restoreSidebar();
                 if (homeViewNode != null) {
                     contentArea.setContent(homeViewNode);
+                    setModeCheckout(false);
+                    List<Product> products = productService.getAllProduct();
+                    products.removeIf(x -> x.getQuantity() < 1);
+                    loadProducts(products);
                 }
             });
+            setModeCheckout(true);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+    private void setModeCheckout(boolean isCheckout){
+        if(isCheckout){
+            cartIconContainer.setDisable(true);
+            cartIconContainer.setOpacity(0.3);
+            lblCartCount.setVisible(false);
+            cartOverlay.setVisible(false);
+        }
+        else{
+            cartIconContainer.setDisable(false);
+            cartIconContainer.setOpacity(1);
+            lblCartCount.setVisible(true);
+            updateCount();
         }
     }
 

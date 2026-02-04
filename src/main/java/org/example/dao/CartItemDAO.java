@@ -56,13 +56,13 @@ public class CartItemDAO {
 
 
 
-    public void removeCartItem(CartItemDTO cartItem){
+    public void removeCartItem(int id){
         String sql = "DELETE FROM CartItems WHERE cart_item_id=?";
         try(
                 Connection conn = JDBCUtils.connectionDB();
                 PreparedStatement ps = conn.prepareStatement(sql);
                 ){
-            ps.setString(1, String.valueOf(cartItem.getCartItemId()));
+            ps.setString(1, String.valueOf(id));
             ps.executeUpdate();
         }catch (SQLException e){
             e.printStackTrace();
