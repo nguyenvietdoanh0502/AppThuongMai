@@ -18,7 +18,7 @@ public class Main extends Application {
         userService.initDefaultAdmin();
 
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/view/DashboardView.fxml")
+                getClass().getResource("/view/WelcomeView.fxml")
         );
         Scene scene = new Scene(loader.load(), 1050, 700);
         stage.setScene(scene);
