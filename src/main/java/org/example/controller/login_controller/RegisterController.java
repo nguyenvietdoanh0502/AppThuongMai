@@ -4,38 +4,130 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import org.example.model.User;
+import javafx.util.Duration;
 import org.example.model.dto.RegisterDTO;
-import org.example.model.dto.UserDTO;
+import org.example.service.EmailService;
 import org.example.service.UserService;
 
 import java.util.Set;
 
 public class RegisterController {
 
-    @FXML private TextField txtUsername;
-    @FXML private TextField txtEmail;
+    @FXML
+    private TextField txtUsername;
+    @FXML
+    private TextField txtEmail;
+    @FXML
+    private TextField txtOTP;
+    @FXML
+    private Label lblCountdown; // Cần thêm vào FXML
+    @FXML
+    private Button btnSendOTP;  // Cần thêm vào FXML
 
-    @FXML private PasswordField txtPassword;
-    @FXML private TextField txtPasswordVisible;
-
-    @FXML private PasswordField txtConfirmPassword;
-    @FXML private TextField txtConfirmPasswordVisible;
-
-    @FXML private CheckBox checkShowPassword;
+    @FXML
+    private PasswordField txtPassword;
+    @FXML
+    private TextField txtPasswordVisible;
+    @FXML
+    private PasswordField txtConfirmPassword;
+    @FXML
+    private TextField txtConfirmPasswordVisible;
+    @FXML
+    private CheckBox checkShowPassword;
 
     private final UserService userService = new UserService();
+    private String generatedOTP = null;
+    private long otpCreationTime;
+    private final long OTP_EXPIRY_DURATION = 60 * 1000; // 2 phút (mili giây)
+
+    private Timeline timeline;
+    private int secondsRemaining;
+
+    @FXML
+    private void handleSendOTP(ActionEvent event) {
+        String email = txtEmail.getText().trim();
+        if (email.isEmpty()) {
+            showAlert("Lỗi", "Vui lòng nhập Email trước khi nhận mã!");
+            return;
+        }
+
+        generatedOTP = String.format("%06d", (int) (Math.random() * 900000) + 100000);
+
+        new Thread(() -> {
+            try {
+                EmailService.sendOTP(email, generatedOTP);
+                otpCreationTime = System.currentTimeMillis();
+                Platform.runLater(() -> {
+                    showAlert("Thông báo", "Mã OTP đã được gửi đến: " + email);
+                    startCountdown(60); // Bắt đầu đếm ngược 120 giây
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> showAlert("Lỗi", "Gửi mail thất bại!"));
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void startCountdown(int seconds) {
+        secondsRemaining = seconds;
+        btnSendOTP.setDisable(true); // Vô hiệu hóa nút khi đang đếm
+
+        if (timeline != null) timeline.stop();
+
+        timeline = new Timeline();
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.getKeyFrames().add(
+                new KeyFrame(Duration.seconds(1), event -> {
+                    secondsRemaining--;
+                    int minutes = secondsRemaining / 60;
+                    int secs = secondsRemaining % 60;
+                    lblCountdown.setText(String.format("Mã hết hạn sau: %02d:%02d", minutes, secs));
+
+                    if (secondsRemaining <= 0) {
+                        timeline.stop();
+                        lblCountdown.setText("Mã đã hết hạn!");
+                        btnSendOTP.setDisable(false);
+                        generatedOTP = null;
+                    }
+                })
+        );
+        timeline.play();
+    }
 
     @FXML
     private void handleSignUp(ActionEvent event) {
+        // 1. Kiểm tra OTP và thời gian
+        if (generatedOTP == null) {
+            showAlert("Lỗi", "Mã OTP không tồn tại hoặc đã hết hạn!");
+            return;
+        }
+
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - otpCreationTime > OTP_EXPIRY_DURATION) {
+            generatedOTP = null;
+            showAlert("Lỗi", "Mã OTP đã hết hạn! Vui lòng nhấn gửi lại.");
+            return;
+        }
+
+        String userEnteredOTP = txtOTP.getText().trim();
+        if (!generatedOTP.equals(userEnteredOTP)) {
+            showAlert("Lỗi", "Mã OTP không chính xác!");
+            return;
+        }
+
+        // 2. Đồng bộ mật khẩu nếu đang hiện text
         if (checkShowPassword.isSelected()) {
             txtPassword.setText(txtPasswordVisible.getText());
             txtConfirmPassword.setText(txtConfirmPasswordVisible.getText());
         }
 
+        // 3. Lấy dữ liệu và Validate
         String email = txtEmail.getText();
         String password = txtPassword.getText();
         String confirm = txtConfirmPassword.getText();
@@ -43,8 +135,9 @@ public class RegisterController {
 
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
-        RegisterDTO dto = new RegisterDTO(txtEmail.getText(), txtPassword.getText(),txtConfirmPassword.getText(),txtUsername.getText());
+        RegisterDTO dto = new RegisterDTO(email, password, confirm, username);
         Set<ConstraintViolation<RegisterDTO>> violations = validator.validate(dto);
+
         if (!violations.isEmpty()) {
             showAlert("Lỗi", violations.iterator().next().getMessage());
             return;
@@ -55,22 +148,21 @@ public class RegisterController {
             return;
         }
 
-        boolean isSuccess = userService.register(username, password, email);
-
-        if (isSuccess) {
-            showAlert("Thành công", "Đăng ký tài khoản thành công!");
-            User user = userService.searchUser(txtUsername.getText());
-            UserDTO.login(user.getUserId(), user.getUsername());
-            NavigationManager.switchScene(event, "UserView.fxml");
+        // 4. Đăng ký
+        if (userService.register(username, password, email)) {
+            if (timeline != null) timeline.stop(); // Dừng đếm ngược
+            showAlert("Thành công", "Đăng ký thành công!");
+            NavigationManager.temporaryUsername = username;
+            NavigationManager.switchScene(event, "LoginView.fxml");
         } else {
-            showAlert("Thất bại", "Tài khoản/Email đã tồn tại hoặc lỗi hệ thống!");
+            showAlert("Thất bại", "Tài khoản/Email đã tồn tại!");
         }
     }
 
+    // Các hàm togglePassword, updateVisibility, handleBackToLogin, showAlert giữ nguyên...
     @FXML
     private void togglePassword(ActionEvent event) {
         boolean isShow = checkShowPassword.isSelected();
-
         updateVisibility(txtPassword, txtPasswordVisible, isShow);
         updateVisibility(txtConfirmPassword, txtConfirmPasswordVisible, isShow);
     }
@@ -93,6 +185,7 @@ public class RegisterController {
 
     @FXML
     private void handleBackToLogin(ActionEvent event) {
+        if (timeline != null) timeline.stop();
         NavigationManager.switchScene(event, "WelcomeView.fxml");
     }
 
@@ -101,6 +194,6 @@ public class RegisterController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
-        alert.showAndWait();
+        alert.show();
     }
 }

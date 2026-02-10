@@ -112,6 +112,11 @@
             <artifactId>google-http-client-gson</artifactId>
             <version>1.44.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.restfb</groupId>
+            <artifactId>restfb</artifactId>
+            <version>2023.3.0</version>
+        </dependency>
     </dependencies>
 
 </project>
