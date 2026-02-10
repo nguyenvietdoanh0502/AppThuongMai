@@ -26,7 +26,7 @@ public class EmailService {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(MY_EMAIL));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
-            message.setSubject("Mã xác nhận khôi phục mật khẩu");
+            message.setSubject("Mã xác nhận OTP !");
             message.setText("Chào bạn,\n\nMã OTP của bạn là: " + otpCode + "\n\nVui lòng dùng mã này để đổi mật khẩu mới.");
 
             Transport.send(message);

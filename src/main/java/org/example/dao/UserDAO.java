@@ -132,4 +132,21 @@ public class UserDAO {
             e.printStackTrace();
         }
     }
+    public User searchUserByEmail(String email) {
+        String sql = "SELECT * FROM users WHERE email = ?";
+        try (Connection conn = JDBCUtils.connectionDB()) { // Đổi về đúng class JDBCUtils của bạn
+            if (conn == null) return null;
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, email);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return mapResultSetToUser(rs); // Dùng lại hàm map có sẵn của bạn
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
