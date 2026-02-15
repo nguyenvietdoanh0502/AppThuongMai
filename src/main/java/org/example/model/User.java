@@ -1,6 +1,5 @@
 package org.example.model;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -18,22 +17,30 @@ public class User {
     private String email;
     private double money;
     private Role role;
+    private Status status;
+
+    private String provider;
 
     public User() {
         this.role = Role.USER;
+        this.status = Status.ACTIVE;
+        this.provider = "LOCAL";
     }
 
     public User(String username, String password, String email) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-    }
-
-    public User(String username, String password, String email, Role role) {
         this();
         this.username = username;
         this.password = password;
         this.email = email;
+    }
+
+
+    public User(String username, String password, String email, Role role, String provider) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
         this.role = role;
+        this.provider = provider;
+        this.status = Status.ACTIVE;
     }
 }

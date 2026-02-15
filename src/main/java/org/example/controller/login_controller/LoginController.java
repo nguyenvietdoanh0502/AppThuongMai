@@ -20,6 +20,8 @@ import javafx.scene.image.ImageView;
 import org.example.model.User;
 import org.example.model.dto.UserDTO;
 import org.example.service.UserService;
+import org.example.model.Status;
+import org.example.controller.login_controller.NavigationManager;
 
 import java.awt.Desktop;
 import java.net.URI;
@@ -59,11 +61,39 @@ public class LoginController {
             return;
         }
 
-        User loggedInUser = userService.login(username, password);
-        if (loggedInUser != null) {
-            completeLogin(loggedInUser, loggedInUser.getUsername(), event);
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Đăng nhập thất bại", "Tài khoản hoặc mật khẩu không chính xác!");
+        try {
+            User loggedInUser = userService.login(username, password);
+            if (loggedInUser != null) {
+                completeLogin(loggedInUser, loggedInUser.getUsername(), event);
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Đăng nhập thất bại", "Tài khoản hoặc mật khẩu không chính xác!");
+            }
+        } catch (RuntimeException e) {
+            showAlert(Alert.AlertType.WARNING, "Tài khoản bị khóa", e.getMessage());
+        }
+    }
+
+    private void processSocialLogin(String email, String fullName, String provider, ActionEvent event) {
+        try {
+            User user = userService.findByEmail(email);
+
+            if (user == null) {
+                user = userService.createSocialUser(email, fullName, provider);
+            } else {
+                System.out.println("User đã tồn tại, tiến hành đăng nhập vào tài khoản hiện có.");
+            }
+
+            if (user != null) {
+                if (user.getStatus() == Status.LOCKED) {
+                    showAlert(Alert.AlertType.WARNING, "Truy cập bị từ chối",
+                            "Tài khoản này hiện đang bị khóa.");
+                    return;
+                }
+                completeLogin(user, fullName, event);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể xử lý đăng nhập " + provider);
         }
     }
 
@@ -95,11 +125,11 @@ public class LoginController {
                         .setPersonFields("names,emailAddresses")
                         .execute();
 
-                // Dùng get(0) hoặc getFirst() tùy phiên bản Java
                 String fullName = profile.getNames().get(0).getDisplayName();
                 String email = profile.getEmailAddresses().get(0).getValue();
 
-                Platform.runLater(() -> processSocialLogin(email, fullName, event));
+                // ĐÃ CẬP NHẬT: Truyền đủ 4 tham số (Email, Name, "GOOGLE", event)
+                Platform.runLater(() -> processSocialLogin(email, fullName, "GOOGLE", event));
             } catch (Exception e) {
                 e.printStackTrace();
                 Platform.runLater(() -> showAlert(Alert.AlertType.ERROR, "Lỗi", "Đăng nhập Google thất bại!"));
@@ -130,7 +160,8 @@ public class LoginController {
                     com.restfb.types.User fbUser = fbClient.fetchObject("me", com.restfb.types.User.class,
                             Parameter.with("fields", "name,email"));
 
-                    Platform.runLater(() -> processSocialLogin(fbUser.getEmail(), fbUser.getName(), event));
+                    // ĐÃ CẬP NHẬT: Truyền đủ 4 tham số (Email, Name, "FACEBOOK", event)
+                    Platform.runLater(() -> processSocialLogin(fbUser.getEmail(), fbUser.getName(), "FACEBOOK", event));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -161,21 +192,11 @@ public class LoginController {
         return code[0];
     }
 
-    private void processSocialLogin(String email, String fullName, ActionEvent event) {
-        User user = userService.findByEmail(email);
-        if (user == null) {
-            user = userService.createGoogleUser(email, fullName);
-        }
-        if (user != null) {
-            completeLogin(user, fullName, event);
-        }
-    }
-
     private void completeLogin(User user, String displayName, ActionEvent event) {
         UserDTO.login(user.getUserId(), user.getUsername());
         showAlert(Alert.AlertType.INFORMATION, "Thành công", "Chào mừng " + displayName);
-
-        String view = "ADMIN".equalsIgnoreCase(String.valueOf(user.getRole())) ? "AdminView.fxml" : "UserView.fxml";
+        String roleName = String.valueOf(user.getRole());
+        String view = "ADMIN".equalsIgnoreCase(roleName) ? "AdminView.fxml" : "UserView.fxml";
         NavigationManager.switchScene(event, view);
     }
 
@@ -198,14 +219,9 @@ public class LoginController {
 
     @FXML
     public void initialize() {
-        // Kiểm tra xem có username nào được gửi từ trang Register không
         if (NavigationManager.temporaryUsername != null && !NavigationManager.temporaryUsername.isEmpty()) {
             txtUsername.setText(NavigationManager.temporaryUsername);
-
-            // Xóa đi để lần sau mở app không bị tự điền lại cái cũ
             NavigationManager.temporaryUsername = "";
-
-            // Tự động focus vào ô password để người dùng nhập luôn
             Platform.runLater(() -> txtPassword.requestFocus());
         }
     }
