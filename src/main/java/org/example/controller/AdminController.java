@@ -22,7 +22,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class AdminController implements Initializable {
-    // --- UI COMPONENTS ---
     @FXML private TableView<Product> tableProducts;
     @FXML private TableColumn<Product, Integer> colId, colQuantity;
     @FXML private TableColumn<Product, String> colTitle, colCategory;
@@ -52,7 +51,6 @@ public class AdminController implements Initializable {
         txtImage.textProperty().addListener((obs, oldV, newV) -> updateImagePreview(newV));
     }
 
-    // --- LOGIC CHỌN FILE ẢNH TỪ MÁY TÍNH ---
     @FXML
     private void handleChooseFile() {
         FileChooser fileChooser = new FileChooser();
@@ -88,7 +86,6 @@ public class AdminController implements Initializable {
         }
     }
 
-    // --- QUẢN LÝ SẢN PHẨM ---
     private void setupProductTable() {
         colId.setCellValueFactory(new PropertyValueFactory<>("productId"));
         colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -133,7 +130,6 @@ public class AdminController implements Initializable {
         if (selected != null) { productDAO.deleteProduct(selected.getProductId()); loadData(); }
     }
 
-    // --- QUẢN LÝ NGƯỜI DÙNG ---
     private void setupUserTable() {
         colUserId.setCellValueFactory(new PropertyValueFactory<>("userId"));
         colUsername.setCellValueFactory(new PropertyValueFactory<>("username"));
@@ -165,7 +161,6 @@ public class AdminController implements Initializable {
         if (u != null) { userDAO.deleteUser(u.getUserId()); loadUserData(); }
     }
 
-    // --- TIỆN ÍCH ---
     private void setupSearchLogic() {
         txtSearchProduct.textProperty().addListener((obs, old, val) -> {
             tableProducts.setItems(masterProductList.filtered(p -> val == null || val.isEmpty() ||

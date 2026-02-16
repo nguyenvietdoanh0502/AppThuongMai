@@ -20,8 +20,6 @@ public class ForgotPasswordController {
     private Label lblMessage;
     @FXML
     private TextField txtUsername, txtEmail, txtOTPInput;
-
-    // Các ô mật khẩu (Ẩn và Hiện)
     @FXML
     private PasswordField txtNewPassword, txtConfirmPassword;
     @FXML
@@ -74,12 +72,9 @@ public class ForgotPasswordController {
             showAlert(Alert.AlertType.ERROR, "Lỗi", "Mã OTP không chính xác!");
         }
     }
-
-    // --- LOGIC HIỂN THỊ MẬT KHẨU ---
     @FXML
     private void handleTogglePassword(ActionEvent event) {
         if (checkShowPassword.isSelected()) {
-            // Đồng bộ text sang ô TextField (Hiện)
             txtNewPasswordVisible.setText(txtNewPassword.getText());
             txtConfirmPasswordVisible.setText(txtConfirmPassword.getText());
 
@@ -106,7 +101,6 @@ public class ForgotPasswordController {
 
     @FXML
     private void handleResetPassword(ActionEvent event) {
-        // Lấy giá trị từ ô đang hiển thị
         String newPass = checkShowPassword.isSelected() ? txtNewPasswordVisible.getText() : txtNewPassword.getText();
         String confirm = checkShowPassword.isSelected() ? txtConfirmPasswordVisible.getText() : txtConfirmPassword.getText();
         String email = txtEmail.getText().trim();

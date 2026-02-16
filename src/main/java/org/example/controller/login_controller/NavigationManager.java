@@ -11,12 +11,7 @@ import java.io.IOException;
 
 public class NavigationManager {
 
-    /**
-     * Hàm dùng chung để chuyển đổi giữa các màn hình
-     *
-     * @param event Sự kiện từ nút bấm để lấy Stage hiện tại
-     * @param fxmlFile Tên file FXML muốn chuyển đến (vd: "LoginView.fxml")
-     */
+
     public static String temporaryUsername = "";
 
     public static void switchScene(ActionEvent event, String fxmlFile) {
