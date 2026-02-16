@@ -11,7 +11,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Duration;
+import org.example.model.User;
 import org.example.model.dto.RegisterDTO;
+import org.example.model.dto.UserDTO;
 import org.example.service.EmailService;
 import org.example.service.UserService;
 
@@ -65,7 +67,7 @@ public class RegisterController {
                 otpCreationTime = System.currentTimeMillis();
                 Platform.runLater(() -> {
                     showAlert("Thông báo", "Mã OTP đã được gửi đến: " + email);
-                    startCountdown(60); // Bắt đầu đếm ngược 120 giây
+                    startCountdown(60);
                 });
             } catch (Exception e) {
                 Platform.runLater(() -> showAlert("Lỗi", "Gửi mail thất bại!"));
@@ -76,7 +78,7 @@ public class RegisterController {
 
     private void startCountdown(int seconds) {
         secondsRemaining = seconds;
-        btnSendOTP.setDisable(true); // Vô hiệu hóa nút khi đang đếm
+        btnSendOTP.setDisable(true);
 
         if (timeline != null) timeline.stop();
 
@@ -102,7 +104,6 @@ public class RegisterController {
 
     @FXML
     private void handleSignUp(ActionEvent event) {
-        // 1. Kiểm tra OTP và thời gian
         if (generatedOTP == null) {
             showAlert("Lỗi", "Mã OTP không tồn tại hoặc đã hết hạn!");
             return;
@@ -120,14 +121,11 @@ public class RegisterController {
             showAlert("Lỗi", "Mã OTP không chính xác!");
             return;
         }
-
-        // 2. Đồng bộ mật khẩu nếu đang hiện text
         if (checkShowPassword.isSelected()) {
             txtPassword.setText(txtPasswordVisible.getText());
             txtConfirmPassword.setText(txtConfirmPasswordVisible.getText());
         }
 
-        // 3. Lấy dữ liệu và Validate
         String email = txtEmail.getText();
         String password = txtPassword.getText();
         String confirm = txtConfirmPassword.getText();
@@ -148,9 +146,10 @@ public class RegisterController {
             return;
         }
 
-        // 4. Đăng ký
         if (userService.register(username, password, email)) {
-            if (timeline != null) timeline.stop(); // Dừng đếm ngược
+            if (timeline != null) timeline.stop();
+            User user = userService.searchUser(txtUsername.getText());
+            UserDTO.login(user.getUserId(), user.getUsername());
             showAlert("Thành công", "Đăng ký thành công!");
             NavigationManager.temporaryUsername = username;
             NavigationManager.switchScene(event, "LoginView.fxml");
@@ -159,7 +158,7 @@ public class RegisterController {
         }
     }
 
-    // Các hàm togglePassword, updateVisibility, handleBackToLogin, showAlert giữ nguyên...
+
     @FXML
     private void togglePassword(ActionEvent event) {
         boolean isShow = checkShowPassword.isSelected();

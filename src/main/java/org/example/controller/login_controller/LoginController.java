@@ -42,11 +42,9 @@ public class LoginController {
 
     private final UserService userService = new UserService();
 
-    // Google Config
     private final String GOOGLE_CLIENT_ID = "137717395728-tjcpm6utt70ht57o2u1m2dcmb67g37lq.apps.googleusercontent.com";
     private final String GOOGLE_CLIENT_SECRET = "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";
 
-    // Facebook Config
     private final String FB_APP_ID = "1335495301926449";
     private final String FB_APP_SECRET = "a08d816fbf017cdaead625f6f7b9ec03";
     private final String REDIRECT_URI = "http://localhost:8888/";
@@ -60,7 +58,6 @@ public class LoginController {
             showAlert(Alert.AlertType.WARNING, "Thông báo", "Vui lòng nhập đầy đủ!");
             return;
         }
-
         try {
             User loggedInUser = userService.login(username, password);
             if (loggedInUser != null) {
@@ -128,7 +125,6 @@ public class LoginController {
                 String fullName = profile.getNames().get(0).getDisplayName();
                 String email = profile.getEmailAddresses().get(0).getValue();
 
-                // ĐÃ CẬP NHẬT: Truyền đủ 4 tham số (Email, Name, "GOOGLE", event)
                 Platform.runLater(() -> processSocialLogin(email, fullName, "GOOGLE", event));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -160,7 +156,6 @@ public class LoginController {
                     com.restfb.types.User fbUser = fbClient.fetchObject("me", com.restfb.types.User.class,
                             Parameter.with("fields", "name,email"));
 
-                    // ĐÃ CẬP NHẬT: Truyền đủ 4 tham số (Email, Name, "FACEBOOK", event)
                     Platform.runLater(() -> processSocialLogin(fbUser.getEmail(), fbUser.getName(), "FACEBOOK", event));
                 }
             } catch (Exception e) {

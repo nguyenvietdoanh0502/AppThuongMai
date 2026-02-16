@@ -42,7 +42,7 @@ public class AdminDashboardController implements Initializable {
     public TableColumn colTotalSpent;
     @FXML
     private BarChart<String, Number> revenueChart;
-    private DashboardDAO dashboardDAO = new DashboardDAO();
+    private final DashboardDAO dashboardDAO = new DashboardDAO();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

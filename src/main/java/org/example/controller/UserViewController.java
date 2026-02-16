@@ -135,7 +135,6 @@ public class UserViewController implements Initializable {
     }
     private void applyAllFilters(List<Product> masterData) {
         List<Product> filteredList = new ArrayList<>();
-
         for (Product p : masterData) {
             boolean matchKeyword = false;
             if (currentSearchKeyword.isEmpty()) {
@@ -172,24 +171,22 @@ public class UserViewController implements Initializable {
             row.setSpacing(10);
             row.setAlignment(Pos.CENTER_LEFT);
             CheckBox checkBox = new CheckBox();
-
             String rawName = cat.getName();
-            String displayName = "";
-
-            // KIỂM TRA CHUỖI AN TOÀN TRƯỚC KHI SUBSTRING
-            if (rawName != null && !rawName.trim().isEmpty()) {
-                displayName = rawName.substring(0, 1).toUpperCase() + rawName.substring(1);
-            } else {
-                displayName = "Unknown Category"; // Hoặc giá trị mặc định bạn muốn
-            }
-
-            Label label = new Label(displayName);
+            Label label = new Label(rawName.substring(0, 1).toUpperCase() + rawName.substring(1));
             label.setFont(new Font(14));
             label.setStyle("-fx-text-fill: #333;");
-
-            row.getChildren().addAll(checkBox, label);
+            row.getChildren().addAll(checkBox,label);
             categoryContainer.getChildren().add(row);
+            checkBox.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+                if (isSelected) {
+                    selectedCategories.add(cat.getName());
+                } else {
+                    selectedCategories.remove(cat.getName());
+                }
+                applyAllFilters(products);
+            });
 
+            label.setOnMouseClicked(e -> checkBox.setSelected(!checkBox.isSelected()));
         }
     }
     private void updatePriceRange(){

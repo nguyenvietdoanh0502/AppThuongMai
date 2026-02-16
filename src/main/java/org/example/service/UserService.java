@@ -4,6 +4,7 @@ import org.example.dao.UserDAO;
 import org.example.model.Role;
 import org.example.model.Status;
 import org.example.model.User;
+import org.example.utils.PasswordUtils;
 
 import static org.example.model.Role.ADMIN;
 
@@ -26,7 +27,8 @@ public class UserService {
         if (userDao.SearchUserName(username) != null) {
             return false;
         }
-        User user = new User(username, password, email, Role.USER, "LOCAL");
+        String hashedPassword = PasswordUtils.hashPassword(password);
+        User user = new User(username, hashedPassword, email, Role.USER, "LOCAL");
         userDao.AddUser(user);
         return true;
     }
@@ -40,12 +42,13 @@ public class UserService {
     }
 
     public User login(String username, String password) {
+
         User user = userDao.SearchUserName(username);
         if (user == null) return null;
         if (user.getStatus() == Status.LOCKED) {
             throw new RuntimeException("Tài khoản của bạn đã bị khóa!");
         }
-        if (!user.getPassword().equals(password)) return null;
+        if (!PasswordUtils.checkPassword(password, user.getPassword())) return null;
         return user;
     }
 
@@ -90,7 +93,8 @@ public class UserService {
     public boolean ResetPassword(String email, String newPassword) {
         User userAccount = userDao.searchUserByEmailAndProvider(email, "LOCAL");
         if (userAccount == null) return false;
-        return userDao.updatePassword(email, newPassword);
+        String hashedPassword = PasswordUtils.hashPassword(newPassword);
+        return userDao.updatePassword(email, hashedPassword);
     }
 
     public User findUserById(int id) {
