@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import org.example.api.CallApi;
 import org.example.constant.Animation;
+import org.example.dao.CartItemDAO;
 import org.example.model.CartItem;
 import org.example.model.Product;
 
@@ -59,6 +60,7 @@ public class ProductInforController implements Initializable {
     private CartItemService cartItemService = new CartItemServiceImpl();
     private Product currentProduct = null;
     private Runnable onAddToCartCallback;
+    private CartItemDAO cartItemDAO = new CartItemDAO();
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -149,7 +151,8 @@ public class ProductInforController implements Initializable {
     public void handleBtnAddToCart(){
         Animation.playClickAnimation(btnAddtoCart);
         CartItem cartItem = new CartItem(UserDTO.getInstance().getUserId(),currentProduct.getProductId(),Integer.parseInt(lblQty.getText()));
-        if(Integer.parseInt(lblQty.getText())>currentProduct.getQuantity()){
+        int qty = cartItemDAO.getQuantityByUserIdAndProductId(UserDTO.getInstance().getUserId(), currentProduct.getProductId());
+        if(Integer.parseInt(lblQty.getText())+qty>currentProduct.getQuantity()){
             Animation.showAlert("Lỗi","Hết hàng!");
         }
         else{

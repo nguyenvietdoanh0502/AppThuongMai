@@ -49,6 +49,7 @@ public class UserViewController implements Initializable {
     public Label lblOverlayHeader;
     public Button btnCheckout;
     public StackPane cartIconContainer;
+    public Button lblUser;
     private Node homeViewNode;
     public ScrollPane contentArea;
     public VBox sidebarFilter;
@@ -59,7 +60,6 @@ public class UserViewController implements Initializable {
     @FXML
     private TilePane productContainer;
     private ProductService productService = ProductServiceImpl.getInstance();
-    private CallApi apiProduct = new CallApi();
     @FXML
     private TextField txtSearch;
     private Set<String> selectedCategories = new HashSet<>();
@@ -364,4 +364,23 @@ public class UserViewController implements Initializable {
         }
     }
 
+    public void handleUser(ActionEvent event) {
+        Animation.playClickAnimation(btnCheckout);
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/UserProfile.fxml"));
+            Parent userProfileView = loader.load();
+            contentArea.setContent(userProfileView);
+            collapseSidebar();
+            cartOverlay.setVisible(false);
+            UserProfileController userProfileController = loader.getController();
+            userProfileController.setOnBackAction(()->{
+                restoreSidebar();
+                if (homeViewNode != null) {
+                    contentArea.setContent(homeViewNode);
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -169,4 +169,23 @@ public class CartItemDAO {
             e.printStackTrace();
         }
     }
+    public int getQuantityByUserIdAndProductId(int userId, int productId){
+        String sql = "SELECT * FROM cartitems WHERE user_id = ? and product_id = ?";
+        int qty = 0;
+        try(
+                Connection conn = JDBCUtils.connectionDB();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ){
+            ps.setString(1, String.valueOf(userId));
+            ps.setString(2, String.valueOf(productId));
+            ResultSet res = ps.executeQuery();
+
+            if(res.next()){
+                qty = res.getInt("quantity");
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return qty;
+    }
 }
