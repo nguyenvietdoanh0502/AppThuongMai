@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import org.example.constant.Animation;
+import org.example.dao.CartItemDAO;
 import org.example.model.CartItem;
 import org.example.model.Product;
 
@@ -43,6 +44,7 @@ public class ProductCardController implements Initializable {
     private CartItemService cartItemService = new CartItemServiceImpl();
     private Product currentProduct;
     private Runnable onAddToCartCallback;
+    private CartItemDAO cartItemDAO = new CartItemDAO();
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setupHoverEffect();
@@ -101,8 +103,14 @@ public class ProductCardController implements Initializable {
     private void handleBtnAdd() {
         Animation.playClickAnimation(btnAdd);
         int currentId = UserDTO.getInstance().getUserId();
+        int qty = cartItemDAO.getQuantityByUserIdAndProductId(currentId,currentProduct.getProductId());
+        if(qty>=currentProduct.getQuantity()){
+            Animation.showAlert("Lỗi","Hết hàng!");
+            return;
+        }
         CartItem cartItem = new CartItem(currentId, currentProduct.getProductId(), 1);
         cartItemService.addCartItem(cartItem);
+
         if (onAddToCartCallback != null) {
             onAddToCartCallback.run();
         }

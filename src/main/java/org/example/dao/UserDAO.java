@@ -3,6 +3,7 @@ package org.example.dao;
 import org.example.model.Role;
 import org.example.model.Status;
 import org.example.model.User;
+import org.example.model.dto.OrderHistoryDTO;
 import org.example.utils.JDBCUtils;
 
 import java.util.ArrayList;
@@ -77,6 +78,17 @@ public class UserDAO {
 
     public void deductMoneyById(int id, double total) {
         String sql = "UPDATE users SET money = money - ? WHERE user_id = ?";
+        try (Connection conn = JDBCUtils.connectionDB();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDouble(1, total);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public void updateMoneyById(int id, double total) {
+        String sql = "UPDATE users SET money = money + ? WHERE user_id = ?";
         try (Connection conn = JDBCUtils.connectionDB();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setDouble(1, total);
@@ -164,5 +176,27 @@ public class UserDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    public List<OrderHistoryDTO> getOrderHistoryById(int id){
+        List<OrderHistoryDTO> list = new ArrayList<>();
+        String sql = "SELECT o.order_date, p.title, od.quantity, od.unit_price, (od.quantity * od.unit_price) as total_price " +
+                "FROM orders o " +
+                "JOIN orderdetails od ON o.order_id = od.order_id " +
+                "JOIN products p ON od.product_id = p.product_id " +
+                "WHERE o.user_id = ? " +
+                "ORDER BY o.order_date DESC";
+        try(
+                Connection conn = JDBCUtils.connectionDB();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ){
+            ps.setString(1, String.valueOf(id));
+            ResultSet res = ps.executeQuery();
+            while(res.next()){
+                list.add(new OrderHistoryDTO(res.getTimestamp("order_date"),res.getString("title"),res.getInt("quantity"),res.getDouble("unit_price"),res.getDouble("total_price")));
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return list;
     }
 }
