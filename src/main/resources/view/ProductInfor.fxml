@@ -154,9 +154,9 @@
                                             </font>
                                         </Button>
 
-                                        <Button prefHeight="45.0" prefWidth="45.0" style="-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-cursor: hand;">
+                                        <Button fx:id="btnAddtoWishlist" onAction="#addToWishList" prefHeight="45.0" prefWidth="45.0" style="-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-cursor: hand;">
                                             <graphic>
-                                                <FontIcon iconLiteral="far-heart" iconSize="20" />
+                                                <FontIcon fx:id="heartIcon" iconLiteral="far-heart" iconSize="20" />
                                             </graphic>
                                         </Button>
                                     </children>
