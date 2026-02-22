@@ -19,7 +19,7 @@
 <?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.UserViewController">
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.UserViewController">
     <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 
         <columnConstraints>
@@ -58,8 +58,6 @@
                     </HBox>
                     <HBox alignment="CENTER" prefHeight="80.0" prefWidth="275.0" spacing="16.0">
                         <children>
-                            <FontIcon iconLiteral="fas-bell" iconSize="20" />
-                            <FontIcon iconLiteral="fas-heart" iconSize="20" />
                             <StackPane fx:id="cartIconContainer" onMouseClicked="#toggleCart">
                                 <children>
                                     <FontIcon iconLiteral="fas-shopping-bag" iconSize="20" />
@@ -71,8 +69,8 @@
                                     </Label>
                                 </children>
                             </StackPane>
-                            <Button fx:id="lblUser" onAction="#handleUser" mnemonicParsing="false" prefHeight="30.0" prefWidth="76.0" style="-fx-background-color: #ffffff; -fx-border-radius: 4; -fx-border-color: #000000;" text="User" />
-                            <Button fx:id="lblLogout" mnemonicParsing="false" onAction="#handleBtnLogout" prefHeight="30.0" prefWidth="76.0" style="-fx-background-color: #000000; -fx-border-radius: 4;" text="Logout" textFill="WHITE" />
+                            <Button fx:id="lblUser" mnemonicParsing="false" onAction="#handleUser" prefHeight="30.0" prefWidth="76.0" style="-fx-background-color: #ffffff; -fx-border-radius: 4; -fx-border-color: #000000; -fx-cursor: hand;" text="User" />
+                            <Button fx:id="lblLogout" mnemonicParsing="false" onAction="#handleBtnLogout" prefHeight="30.0" prefWidth="76.0" style="-fx-background-color: #000000; -fx-border-radius: 4; -fx-cursor: hand;" text="Logout" textFill="WHITE" />
                         </children>
                     </HBox>
 
