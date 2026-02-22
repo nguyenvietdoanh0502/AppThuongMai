@@ -1,10 +1,14 @@
 package org.example.controller;
 
 import javafx.animation.ScaleTransition;
+import javafx.animation.SequentialTransition;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
@@ -12,13 +16,22 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import org.example.api.CallApi;
+import org.example.constant.Animation;
+import org.example.dao.CartItemDAO;
+import org.example.model.CartItem;
 import org.example.model.Product;
 
 import javafx.scene.image.Image;
 
 import javafx.scene.control.Label;
+import org.example.model.dto.UserDTO;
+import org.example.service.CartItemService;
 import org.example.service.ProductService;
+import org.example.service.WishListService;
+import org.example.service.impl.CartItemServiceImpl;
 import org.example.service.impl.ProductServiceImpl;
+import org.example.service.impl.WishListServiceImpl;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
 import java.net.URL;
@@ -28,6 +41,13 @@ import java.util.ResourceBundle;
 
 public class ProductInforController implements Initializable {
     public VBox relatedItemsContainer;
+    public Button btnTru;
+    public Button btnCong;
+    public Label lblQty;
+    public Label lblRemain;
+    public Button btnAddtoCart;
+    public Button btnAddtoWishlist;
+    public FontIcon heartIcon;
     @FXML
     private Label lblTitle;
     @FXML
@@ -43,18 +63,39 @@ public class ProductInforController implements Initializable {
     @FXML
     private ImageView imgProduct;
     private final ProductService productService= ProductServiceImpl.getInstance();
+    private CartItemService cartItemService = new CartItemServiceImpl();
+    private Product currentProduct = null;
+    private Runnable onAddToCartCallback;
+    private CartItemDAO cartItemDAO = new CartItemDAO();
+    private WishListService wishListService = new WishListServiceImpl();
+    private boolean inWishList = false;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-
+    }
+    public void setOnAddToCart(Runnable callback) {
+        this.onAddToCartCallback = callback;
     }
     public void setData(Product product) throws IOException, InterruptedException {
+        currentProduct = product;
         lblTitle.setText(product.getTitle());
         lblCategory.setText(product.getCategory());
         lblDescri.setText(product.getDescription());
         lblRating.setText(String.valueOf(product.getRatingRate()));
         lblReview.setText("("+String.valueOf(product.getRatingCount())+" Reviews)");
         lblPrice.setText("$"+String.valueOf(product.getPrice()));
+        lblRemain.setText(String.valueOf(product.getQuantity()));
+        if(wishListService.checkWishList(UserDTO.getInstance().getUserId(),currentProduct.getProductId())){
+            inWishList = true;
+        }
+        if(inWishList){
+            heartIcon.setIconLiteral("fas-heart");
+            heartIcon.setIconColor(Color.RED);
+        }
+        else{
+            heartIcon.setIconLiteral("far-heart");
+            heartIcon.setIconColor(Color.BLACK);
+        }
         try{
             if(product.getImage()!=null && !product.getImage().isEmpty()){
                 Image image = new Image(product.getImage(),true);
@@ -83,6 +124,11 @@ public class ProductInforController implements Initializable {
                         throw new RuntimeException(e);
                     }
                 });
+                cardController.setOnAddToCart(() -> {
+                    if (onAddToCartCallback != null) {
+                        onAddToCartCallback.run();
+                    }
+                });
                 relatedItemsContainer.getChildren().add(cardNode);
             }
         }catch (IOException e){
@@ -99,6 +145,59 @@ public class ProductInforController implements Initializable {
     private void handleBack() {
         if (backHandler != null) {
             backHandler.run();
+        }
+    }
+    @FXML
+    public void handleBtnCong(){
+        Animation.playClickAnimation(btnCong);
+        if(Integer.parseInt(lblQty.getText())<currentProduct.getQuantity()){
+            int quantity = Integer.parseInt(lblQty.getText());
+            lblQty.setText(String.valueOf(quantity + 1));
+        }
+        else{
+            Animation.showAlert("Lỗi","Vượt quá số lượng hàng còn trong kho!");
+        }
+    }
+    @FXML
+    public void handleBtnTru(){
+        Animation.playClickAnimation(btnTru);
+        if(Integer.parseInt(lblQty.getText())>1){
+            int quantity = Integer.parseInt(lblQty.getText());
+            lblQty.setText(String.valueOf(quantity - 1));
+        }
+    }
+    @FXML
+    public void handleBtnAddToCart(){
+        Animation.playClickAnimation(btnAddtoCart);
+        CartItem cartItem = new CartItem(UserDTO.getInstance().getUserId(),currentProduct.getProductId(),Integer.parseInt(lblQty.getText()));
+        int qty = cartItemDAO.getQuantityByUserIdAndProductId(UserDTO.getInstance().getUserId(), currentProduct.getProductId());
+        if(Integer.parseInt(lblQty.getText())+qty>currentProduct.getQuantity()){
+            Animation.showAlert("Lỗi","Hết hàng!");
+        }
+        else{
+            cartItemService.addCartItem(cartItem);
+            lblQty.setText("1");
+        }
+
+        if (onAddToCartCallback != null) {
+            onAddToCartCallback.run();
+        }
+    }
+    public void addToWishList(ActionEvent event) {
+        Animation.playClickAnimation(btnAddtoWishlist);
+        int id = UserDTO.getInstance().getUserId();
+        if(!inWishList){
+            wishListService.addWishList(id, currentProduct.getProductId());
+            inWishList = true;
+            heartIcon.setIconLiteral("fas-heart");
+            heartIcon.setIconColor(Color.RED);
+        }
+        else{
+            wishListService.deleteWishList(id,currentProduct.getProductId());
+            inWishList = false;
+
+            heartIcon.setIconLiteral("far-heart");
+            heartIcon.setIconColor(Color.BLACK);
         }
     }
 }

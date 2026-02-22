@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.CheckoutController">
+    <children>
+        <Label layoutX="40.0" layoutY="30.0" text="Checkout" textFill="#000000">
+            <font>
+                <Font name="System Bold" size="32.0" />
+            </font>
+        </Label>
+
+        <HBox layoutX="40.0" layoutY="90.0" prefHeight="580.0" prefWidth="920.0" spacing="40.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="90.0">
+
+            <StackPane HBox.hgrow="ALWAYS">
+                <children>
+
+                    <VBox fx:id="paneCart" spacing="0.0" style="-fx-background-color: white;">
+                        <HBox spacing="0.0" style="-fx-padding: 0 0 15 0; -fx-border-color: transparent transparent #eee transparent;">
+                            <Label prefWidth="300.0" style="-fx-font-weight: bold; -fx-text-fill: #777;" text="Products" />
+                            <Label alignment="CENTER" prefWidth="100.0" style="-fx-font-weight: bold; -fx-text-fill: #777;" text="Price" />
+                            <Label alignment="CENTER" prefWidth="150.0" style="-fx-font-weight: bold; -fx-text-fill: #777;" text="Quantity" />
+                            <Label alignment="CENTER_RIGHT" prefWidth="100.0" style="-fx-font-weight: bold; -fx-text-fill: #777;" text="Subtotal" />
+                        </HBox>
+
+                        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: white; -fx-background: white; -fx-border-color: transparent;" vbarPolicy="NEVER">
+                            <content>
+                                <VBox fx:id="vboxCartItems" spacing="20.0" style="-fx-padding: 20 0;">
+                                </VBox>
+                            </content>
+                        </ScrollPane>
+                    </VBox>
+
+                    <VBox fx:id="paneShipping" visible="false" spacing="15.0" style="-fx-background-color: white; -fx-padding: 0 20 0 0;">
+                        <Label text="Shipping Information" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+                        <VBox spacing="15.0">
+                            <VBox spacing="5.0">
+                                <Label text="Full Name" style="-fx-text-fill: #555;"/>
+                                <TextField fx:id="txtFullName" promptText="Enter your full name" prefHeight="40.0" style="-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5;"/>
+                            </VBox>
+
+                            <VBox spacing="5.0">
+                                <Label text="Phone Number" style="-fx-text-fill: #555;"/>
+                                <TextField fx:id="txtPhone" promptText="0987..." prefHeight="40.0" style="-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5;"/>
+                            </VBox>
+
+                            <VBox spacing="5.0">
+                                <Label text="Address" style="-fx-text-fill: #555;"/>
+                                <TextField fx:id="txtAddress" promptText="House number, Street name" prefHeight="40.0" style="-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5;"/>
+                            </VBox>
+
+
+                            <Label text="Payment Method" style="-fx-font-weight: bold; -fx-padding: 10 0 0 0;"/>
+                            <HBox spacing="10.0">
+                                <Button text="COD (Tiền mặt)" prefHeight="40.0" maxWidth="Infinity" HBox.hgrow="ALWAYS" style="-fx-background-color: #eee; -fx-border-color: #000; -fx-border-width: 2; -fx-font-weight: bold;"/>
+                                <Button text="Banking / QR" prefHeight="40.0" maxWidth="Infinity" HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-border-color: #ddd;"/>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+
+                </children>
+            </StackPane>
+
+
+            <VBox prefWidth="320.0" spacing="20.0" style="-fx-padding: 0;">
+                <VBox spacing="15.0">
+                    <HBox>
+                        <Label style="-fx-font-size: 14px;" text="Subtotal" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="lblSubtotal" style="-fx-font-weight: bold; -fx-font-size: 14px;" text="\$200.00" />
+                    </HBox>
+                    <HBox>
+                        <Label style="-fx-font-size: 14px;" text="Delivery Charge" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label style="-fx-font-weight: bold; -fx-font-size: 14px;" text="\$5.00" />
+                    </HBox>
+                    <Separator />
+                    <HBox>
+                        <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Grand Total" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="lblGrandTotal" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #000;" text="\$205.00" />
+                    </HBox>
+                </VBox>
+
+                <VBox spacing="5.0">
+                    <Label style="-fx-font-size: 12px; -fx-text-fill: #555;" text="Enter Discount Code" />
+                    <HBox style="-fx-border-color: #000; -fx-border-radius: 5; -fx-background-radius: 5;">
+                        <TextField promptText="FLAT50" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS" />
+                        <Button style="-fx-background-color: #000; -fx-text-fill: white; -fx-background-radius: 0 5 5 0; -fx-cursor: hand;" text="Apply" />
+                    </HBox>
+                </VBox>
+
+                <Button fx:id="btnCheckoutAction" maxWidth="Infinity" prefHeight="50.0" style="-fx-background-color: black; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;" text="Proceed to Checkout">
+                    <VBox.margin>
+                        <Insets top="20.0" />
+                    </VBox.margin>
+                </Button>
+
+                <Button fx:id="btnBack" onAction="#handleBack" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-underline: true; -fx-cursor: hand;" text="Continue Shopping" />
+
+            </VBox>
+        </HBox>
+        <StackPane fx:id="successOverlay" visible="false"
+                   AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                   AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
+                   style="-fx-background-color: rgba(0, 0, 0, 0.5);"> <children>
+            <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" spacing="20.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);">
+                <padding>
+                    <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                </padding>
+                <children>
+                    <StackPane style="-fx-background-color: #e8f5e9; -fx-background-radius: 50; -fx-min-width: 80px; -fx-min-height: 80px; -fx-max-width: 80px; -fx-max-height: 80px;">
+                        <children>
+                            <FontIcon iconLiteral="fas-check" iconSize="40" iconColor="#4caf50" />
+                        </children>
+                    </StackPane>
+
+                    <Label text="Thanh toán thành công!" textFill="#333333">
+                        <font>
+                            <Font name="System Bold" size="22.0" />
+                        </font>
+                    </Label>
+
+                    <Label text="Cảm ơn bạn đã mua hàng. Đơn hàng của bạn đang được xử lý." textAlignment="CENTER" textFill="#666666" wrapText="true">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Label>
+
+
+                    <Button fx:id="btnContinueShopping" mnemonicParsing="false" prefHeight="45.0" prefWidth="200.0" style="-fx-background-color: black; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 25; -fx-cursor: hand;" text="Tiếp tục mua sắm" />
+                </children>
+            </VBox>
+        </children>
+        </StackPane>
+    </children>
+
+</AnchorPane>

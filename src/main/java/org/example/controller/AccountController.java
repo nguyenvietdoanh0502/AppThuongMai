@@ -1,5 +1,8 @@
 package org.example.controller;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,30 +12,47 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+
+import java.net.URL;
+
 import org.example.constant.Regex;
 import org.example.model.Role;
 import org.example.model.User;
+import org.example.model.dto.RegisterDTO;
+import org.example.model.dto.UserDTO;
 import org.example.service.UserService;
+import jakarta.validation.Validator;
 
 import java.io.IOException;
 import java.util.EventObject;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class AccountController {
-    @FXML private HBox paneChoice;
-    @FXML private VBox paneFields;
-    @FXML private Label lblTitle;
-    @FXML private Button btnSubmit;
-    @FXML private Hyperlink linkForgot;
+    @FXML
+    private HBox paneChoice;
+    @FXML
+    private VBox paneFields;
+    @FXML
+    private Label lblTitle;
+    @FXML
+    private Button btnSubmit;
+    @FXML
+    private Hyperlink linkForgot;
 
-    @FXML private TextField txtUsername, txtEmail;
-    @FXML private PasswordField txtPassword, txtConfirm;
-    @FXML private TextField txtPasswordVisible;
-    @FXML private CheckBox checkShowPassword;
+    @FXML
+    private TextField txtUsername, txtEmail;
+    @FXML
+    private PasswordField txtPassword, txtConfirm;
+    @FXML
+    private TextField txtPasswordVisible;
+    @FXML
+    private CheckBox checkShowPassword;
 
     private final UserService userService = new UserService();
     private boolean isRegisterMode = false;
     private boolean isVerifyingStep = true;
+
 
     @FXML
     public void initialize() {
@@ -109,59 +129,45 @@ public class AccountController {
         }
     }
 
-
-
-
     private void handleLoginInternal() {
-        if(txtUsername.getText().isEmpty()){
-            showAlert("Lỗi","Vui lòng điền đầy đủ Username!");
+        String username = txtUsername.getText();
+        String password = txtPassword.getText();
+
+        if (username.isEmpty() || password.isEmpty()) {
+            showAlert("Lỗi", "Vui lòng nhập tài khoản và mật khẩu!");
             return;
         }
-        if(txtPassword.getText().isEmpty()){
-            showAlert("Lỗi","Vui lòng điển đầy đủ Password!");
-            return;
-        }
-        User user = login(txtUsername.getText(), txtPassword.getText());
+
+        User user = userService.login(username, password);
+
         if (user != null) {
-            showAlert("Thành công", "Đăng nhập thành công!");
-            RoleAssignment(user);
-            if(user.getRole()== Role.USER){
+            // --- DÒNG QUAN TRỌNG ĐỂ KIỂM TRA ---
+            System.out.println("DEBUG: Username đăng nhập: " + user.getUsername());
+            System.out.println("DEBUG: Role hệ thống nhận được: [" + user.getRole() + "]");
+
+            // Kiểm tra xem user.getRole() có thực sự bằng Role.ADMIN không
+            if (user.getRole() == Role.ADMIN) {
+                System.out.println("=> KẾT QUẢ: Nhận diện đúng ADMIN. Đang gọi switchToAdminView().");
+                showAlert("Thành công", "Chào mừng Admin quay trở lại!");
+                switchToAdminView();
+            } else {
+                System.out.println("=> KẾT QUẢ: Nhận diện là USER (hoặc Role khác). Đang gọi switchToUserView().");
+                showAlert("Thành công", "Đăng nhập người dùng thành công!");
                 switchToUserView();
             }
-            else{
-                switchToAdminView();
-            }
-
         } else {
-            showAlert("Lỗi", "Sai tài khoản hoặc mật khẩu!");
+            showAlert("Lỗi", "Tài khoản hoặc mật khẩu không chính xác!");
         }
     }
 
     private void handleRegisterInternal() {
-        if(txtUsername.getText().isEmpty()){
-            showAlert("Lỗi","Vui lòng điền đầy đủ Username!");
-            return;
-        }
-        if(txtEmail.getText().isEmpty()){
-            showAlert("Lỗi","Vui lòng điền đầy đủ Email!");
-            return;
-        }
-        Pattern EMAIL_PATTERN = Pattern.compile(Regex.EMAIL_PATTERN);
-        if(!EMAIL_PATTERN.matcher(txtEmail.getText()).matches()){
-            showAlert("Lỗi","Email không đúng định dạng!");
-            return;
-        }
-        if(txtPassword.getText().isEmpty()){
-            showAlert("Lỗi","Vui lòng điền đầy đủ mật khẩu!");
-            return;
-        }
-        if(txtPassword.getText().length()<6){
-            showAlert("Lỗi","Mật khẩu phải có ít nhất 6 ký tự!");
-            return;
-        }
-        Pattern PASS_PATTERN = Pattern.compile(Regex.PASSWORD_PATTERN);
-        if(!PASS_PATTERN.matcher(txtPassword.getText()).matches()){
-            showAlert("Lỗi","Mật khẩu phải bao gồm chữ viết hoa, chữ viết thường, số, ký tự đặc biệt!");
+
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        RegisterDTO dto = new RegisterDTO(txtEmail.getText(), txtPassword.getText(), txtConfirm.getText(), txtUsername.getText());
+        Set<ConstraintViolation<RegisterDTO>> violations = validator.validate(dto);
+        if (!violations.isEmpty()) {
+            showAlert("Lỗi", violations.iterator().next().getMessage());
             return;
         }
         if (!txtPassword.getText().equals(txtConfirm.getText())) {
@@ -171,7 +177,10 @@ public class AccountController {
         String res = register(txtUsername.getText(), txtPassword.getText(), txtEmail.getText());
         if (res.equals("Thành công")) {
             showAlert("Thành công", "Đăng ký thành công!");
-            showMenu();
+            User user = userService.searchUser(txtUsername.getText());
+            UserDTO.login(user.getUserId(), user.getUsername());
+            switchToUserView();
+
         } else {
             showAlert("Lỗi", "Tài khoản đã tồn tại!");
         }
@@ -184,12 +193,12 @@ public class AccountController {
             setupForgotUI();
             return;
         }
-        if(txtUsername.getText().isEmpty()){
-            showAlert("Lỗi","Vui lòng điền đầy đủ Username!");
+        if (txtUsername.getText().isEmpty()) {
+            showAlert("Lỗi", "Vui lòng điền đầy đủ Username!");
             return;
         }
-        if(txtEmail.getText().isEmpty()){
-            showAlert("Lỗi","Vui lòng điền đầy đủ Password!");
+        if (txtEmail.getText().isEmpty()) {
+            showAlert("Lỗi", "Vui lòng điền đầy đủ Password!");
             return;
         }
         if (isVerifyingStep) {
@@ -200,17 +209,17 @@ public class AccountController {
                 showAlert("Lỗi", "Username hoặc Email không chính xác!");
             }
         } else {
-            if(txtPassword.getText().isEmpty()){
-                showAlert("Lỗi","Vui lòng điền đầy đủ Password!");
+            if (txtPassword.getText().isEmpty()) {
+                showAlert("Lỗi", "Vui lòng điền đầy đủ Password!");
                 return;
             }
             Pattern PASS_PATTERN = Pattern.compile(Regex.PASSWORD_PATTERN);
-            if(!PASS_PATTERN.matcher(txtPassword.getText()).matches()){
-                showAlert("Lỗi","Mật khẩu phải bao gồm chữ viết hoa, chữ viết thường, số, ký tự đặc biệt!");
+            if (!PASS_PATTERN.matcher(txtPassword.getText()).matches()) {
+                showAlert("Lỗi", "Mật khẩu phải bao gồm chữ viết hoa, chữ viết thường, số, ký tự đặc biệt!");
                 return;
             }
-            if(!txtPassword.getText().equals(txtConfirm.getText())){
-                showAlert("Lỗi","Xác nhận mật khẩu không trùng khớp!");
+            if (!txtPassword.getText().equals(txtConfirm.getText())) {
+                showAlert("Lỗi", "Xác nhận mật khẩu không trùng khớp!");
                 return;
             }
 
@@ -227,13 +236,19 @@ public class AccountController {
         toggleViews(false);
         clearFields();
 
-        txtUsername.setVisible(true);   txtUsername.setManaged(true);
-        txtEmail.setVisible(true);      txtEmail.setManaged(true);
+        txtUsername.setVisible(true);
+        txtUsername.setManaged(true);
+        txtEmail.setVisible(true);
+        txtEmail.setManaged(true);
 
-        txtPassword.setVisible(false);         txtPassword.setManaged(false);
-        txtPasswordVisible.setVisible(false);  txtPasswordVisible.setManaged(false);
-        txtConfirm.setVisible(false);          txtConfirm.setManaged(false);
-        checkShowPassword.setVisible(false);    checkShowPassword.setManaged(false);
+        txtPassword.setVisible(false);
+        txtPassword.setManaged(false);
+        txtPasswordVisible.setVisible(false);
+        txtPasswordVisible.setManaged(false);
+        txtConfirm.setVisible(false);
+        txtConfirm.setManaged(false);
+        checkShowPassword.setVisible(false);
+        checkShowPassword.setManaged(false);
         linkForgot.setVisible(false);
         linkForgot.setManaged(false);
         btnSubmit.setText("Kiểm tra thông tin");
@@ -247,9 +262,12 @@ public class AccountController {
         txtUsername.setDisable(true);
         txtEmail.setDisable(true);
 
-        txtPassword.setVisible(true);   txtPassword.setManaged(true);
-        txtConfirm.setVisible(true);    txtConfirm.setManaged(true);
-        checkShowPassword.setVisible(true); checkShowPassword.setManaged(true);
+        txtPassword.setVisible(true);
+        txtPassword.setManaged(true);
+        txtConfirm.setVisible(true);
+        txtConfirm.setManaged(true);
+        checkShowPassword.setVisible(true);
+        checkShowPassword.setManaged(true);
 
         btnSubmit.setText("Cập nhật mật khẩu");
     }
@@ -264,20 +282,28 @@ public class AccountController {
     }
 
     private void toggleViews(boolean showMenu) {
-        paneChoice.setVisible(showMenu);   paneChoice.setManaged(showMenu);
-        paneFields.setVisible(!showMenu);  paneFields.setManaged(!showMenu);
+        paneChoice.setVisible(showMenu);
+        paneChoice.setManaged(showMenu);
+        paneFields.setVisible(!showMenu);
+        paneFields.setManaged(!showMenu);
     }
 
     private void setFieldsVisibility(boolean showConfirm, boolean showEmail) {
-        txtConfirm.setVisible(showConfirm); txtConfirm.setManaged(showConfirm);
-        txtEmail.setVisible(showEmail);     txtEmail.setManaged(showEmail);
-        txtPassword.setVisible(true);       txtPassword.setManaged(true);
-        checkShowPassword.setVisible(true); checkShowPassword.setManaged(true);
+        txtConfirm.setVisible(showConfirm);
+        txtConfirm.setManaged(showConfirm);
+        txtEmail.setVisible(showEmail);
+        txtEmail.setManaged(showEmail);
+        txtPassword.setVisible(true);
+        txtPassword.setManaged(true);
+        checkShowPassword.setVisible(true);
+        checkShowPassword.setManaged(true);
     }
 
     private void clearFields() {
-        txtUsername.clear(); txtUsername.setDisable(false);
-        txtEmail.clear();    txtEmail.setDisable(false);
+        txtUsername.clear();
+        txtUsername.setDisable(false);
+        txtEmail.clear();
+        txtEmail.setDisable(false);
         txtPassword.clear();
         txtConfirm.clear();
         if (checkShowPassword != null) {
@@ -293,12 +319,13 @@ public class AccountController {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
     private void switchToUserView() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/UserView.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) btnSubmit.getScene().getWindow();
-            Scene scene = new Scene(root,1100,700);
+            Scene scene = new Scene(root, 1100, 700);
             stage.setScene(scene);
             stage.centerOnScreen();
             stage.show();
@@ -307,19 +334,21 @@ public class AccountController {
             e.printStackTrace();
             showAlert("Lỗi hệ thống", "Không tìm thấy file giao diện UserView.fxml");
         }
-    }private void switchToAdminView() {
+    }
+
+    private void switchToAdminView() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AdminView.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) btnSubmit.getScene().getWindow();
-            Scene scene = new Scene(root,1100,700);
+            Scene scene = new Scene(root, 1100, 700);
             stage.setScene(scene);
             stage.centerOnScreen();
             stage.show();
 
         } catch (IOException e) {
+            System.err.println("LOI LOAD FXML: " + e.getMessage());
             e.printStackTrace();
-            showAlert("Lỗi hệ thống", "Không tìm thấy file giao diện UserView.fxml");
         }
     }
 }

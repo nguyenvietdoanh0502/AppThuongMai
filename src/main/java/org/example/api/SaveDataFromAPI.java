@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @NoArgsConstructor
@@ -23,8 +25,8 @@ public class SaveDataFromAPI {
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-        String sql = "INSERT INTO products (title,price,description,category_name,image,rating_rate,rating_count,quantity, api_id) " +
-                "VALUES (?, ?, ?, ?, ?,?,?,?,?) " +
+        String sql = "INSERT INTO products (title,price,description,category_name,image,rating_rate,rating_count,quantity, api_id,is_deleted) " +
+                "VALUES (?, ?, ?, ?, ?,?,?,?,?,0) " +
                 "ON DUPLICATE KEY UPDATE " +
                 "title = VALUES(title), " +
                 "price = VALUES(price), " +
@@ -33,13 +35,11 @@ public class SaveDataFromAPI {
                 "image = VALUES(image), " +
                 "rating_rate= VALUES(rating_rate), " +
                 "rating_count= VALUES(rating_count), " +
-                "quantity= VALUES(quantity), " +
                 "api_id= VALUES(api_id)"
                 ;
-
         try (Connection conn = JDBCUtils.connectionDB();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            conn.setAutoCommit(false);
+             conn.setAutoCommit(false);
 
             for (Product product : apiList) {
                 ps.setString(1, product.getTitle());
@@ -55,8 +55,24 @@ public class SaveDataFromAPI {
             }
             ps.executeBatch();
             conn.commit();
-            System.out.println("Đã đồng bộ xong " + apiList.size() + " sản phẩm!");
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        Set<String> uniqueCategories = new HashSet<>();
+        for (Product product : apiList) {
+            uniqueCategories.add(product.getCategory());
+        }
+        String sqlCat = "INSERT IGNORE INTO categories (name) VALUES (?)";
+        try(
+                Connection conn = JDBCUtils.connectionDB();
+                PreparedStatement ps = conn.prepareStatement(sqlCat)
+                ){
+            for(String x:uniqueCategories){
+                ps.setString(1,x);
+                ps.addBatch();
+            }
+            ps.executeBatch();
+        }catch (SQLException e){
             e.printStackTrace();
         }
     }

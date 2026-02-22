@@ -15,4 +15,10 @@ public class CartItem {
     private int userId;
     private int productId;
     private int quantity;
+
+    public CartItem(int userId, int productId, int i) {
+        this.userId = userId;
+        this.productId = productId;
+        this.quantity = i;
+    }
 }
