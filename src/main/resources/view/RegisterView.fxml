@@ -71,17 +71,22 @@
 
         <VBox alignment="CENTER" spacing="15">
             <Label style="-fx-text-fill: #1F41BB; -fx-font-weight: bold;" text="Or continue with"/>
-            <HBox alignment="CENTER" spacing="20">
-                <ImageView fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
-                    <image>
-                        <Image url="@../asset/google.jpg"/>
-                    </image>
-                </ImageView>
-                <ImageView fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
+            <HBox alignment="CENTER" spacing="30"> <ImageView fx:id="imgGoogle" fitHeight="40.0" fitWidth="40.0"
+                                                              onMouseClicked="#handleGoogleLogin" pickOnBounds="true" preserveRatio="true"
+                                                              style="-fx-cursor: hand;">
+                <image>
+                    <Image url="@../asset/google.jpg"/>
+                </image>
+            </ImageView>
+
+                <ImageView fx:id="imgFacebook" fitHeight="40.0" fitWidth="40.0"
+                           onMouseClicked="#handleFacebookLogin" pickOnBounds="true" preserveRatio="true"
+                           style="-fx-cursor: hand;">
                     <image>
                         <Image url="@../asset/facebook.png"/>
                     </image>
                 </ImageView>
+
             </HBox>
         </VBox>
     </VBox>
