@@ -16,35 +16,30 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import org.example.model.User;
 import org.example.model.dto.UserDTO;
 import org.example.service.UserService;
 import org.example.model.Status;
-import org.example.controller.login_controller.NavigationManager;
 
 import java.awt.Desktop;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class LoginController {
 
-    @FXML
-    private TextField txtUsername;
-    @FXML
-    private PasswordField txtPassword;
-    @FXML
-    private TextField txtPasswordVisible;
-    @FXML
-    private CheckBox checkShowPassword;
-    @FXML
-    private ImageView imgAvatar;
+    @FXML private TextField txtUsername, txtPasswordVisible;
+    @FXML private PasswordField txtPassword;
+    @FXML private CheckBox checkShowPassword;
+    @FXML private ImageView imgAvatar; // Đã được sử dụng để hiển thị preview nếu cần
 
     private final UserService userService = new UserService();
 
     private final String GOOGLE_CLIENT_ID = "137717395728-tjcpm6utt70ht57o2u1m2dcmb67g37lq.apps.googleusercontent.com";
     private final String GOOGLE_CLIENT_SECRET = "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";
-
     private final String FB_APP_ID = "1335495301926449";
     private final String FB_APP_SECRET = "a08d816fbf017cdaead625f6f7b9ec03";
     private final String REDIRECT_URI = "http://localhost:8888/";
@@ -61,7 +56,8 @@ public class LoginController {
         try {
             User loggedInUser = userService.login(username, password);
             if (loggedInUser != null) {
-                completeLogin(loggedInUser, loggedInUser.getUsername(), event);
+                // Đăng nhập thường: Truyền "" cho avatarUrl
+                completeLogin(loggedInUser, loggedInUser.getUsername(), "", event);
             } else {
                 showAlert(Alert.AlertType.ERROR, "Đăng nhập thất bại", "Tài khoản hoặc mật khẩu không chính xác!");
             }
@@ -70,26 +66,21 @@ public class LoginController {
         }
     }
 
-    private void processSocialLogin(String email, String fullName, String provider, ActionEvent event) {
+    private void processSocialLogin(String email, String fullName, String avatarUrl, String provider, ActionEvent event) {
         try {
             User user = userService.findByEmail(email);
-
             if (user == null) {
                 user = userService.createSocialUser(email, fullName, provider);
-            } else {
-                System.out.println("User đã tồn tại, tiến hành đăng nhập vào tài khoản hiện có.");
             }
 
             if (user != null) {
                 if (user.getStatus() == Status.LOCKED) {
-                    showAlert(Alert.AlertType.WARNING, "Truy cập bị từ chối",
-                            "Tài khoản này hiện đang bị khóa.");
+                    showAlert(Alert.AlertType.WARNING, "Truy cập bị từ chối", "Tài khoản này hiện đang bị khóa.");
                     return;
                 }
-                completeLogin(user, fullName, event);
+                completeLogin(user, fullName, avatarUrl, event);
             }
         } catch (Exception e) {
-            e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể xử lý đăng nhập " + provider);
         }
     }
@@ -101,33 +92,28 @@ public class LoginController {
                 GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
                         GoogleNetHttpTransport.newTrustedTransport(),
                         GsonFactory.getDefaultInstance(),
-                        GOOGLE_CLIENT_ID,
-                        GOOGLE_CLIENT_SECRET,
+                        GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,
                         Arrays.asList("email", "profile"))
-                        .setAccessType("offline")
-                        .build();
+                        .setAccessType("offline").build();
 
                 LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
                 AuthorizationCodeInstalledApp app = new AuthorizationCodeInstalledApp(flow, receiver);
                 Credential credential = app.authorize("user");
 
                 PeopleService peopleService = new PeopleService.Builder(
-                        GoogleNetHttpTransport.newTrustedTransport(),
-                        GsonFactory.getDefaultInstance(),
-                        credential)
-                        .setApplicationName("Hobbee App")
-                        .build();
+                        GoogleNetHttpTransport.newTrustedTransport(), GsonFactory.getDefaultInstance(), credential)
+                        .setApplicationName("Hobbee App").build();
 
+                // Thêm "photos" để lấy avatar
                 Person profile = peopleService.people().get("people/me")
-                        .setPersonFields("names,emailAddresses")
-                        .execute();
+                        .setPersonFields("names,emailAddresses,photos").execute();
 
-                String fullName = profile.getNames().get(0).getDisplayName();
-                String email = profile.getEmailAddresses().get(0).getValue();
+                String fullName = profile.getNames().getFirst().getDisplayName(); // Dùng getFirst()
+                String email = profile.getEmailAddresses().getFirst().getValue();
+                String avatarUrl = profile.getPhotos() != null ? profile.getPhotos().getFirst().getUrl() : "";
 
-                Platform.runLater(() -> processSocialLogin(email, fullName, "GOOGLE", event));
+                Platform.runLater(() -> processSocialLogin(email, fullName, avatarUrl, "GOOGLE", event));
             } catch (Exception e) {
-                e.printStackTrace();
                 Platform.runLater(() -> showAlert(Alert.AlertType.ERROR, "Lỗi", "Đăng nhập Google thất bại!"));
             }
         }).start();
@@ -138,28 +124,24 @@ public class LoginController {
         new Thread(() -> {
             try {
                 String loginUrl = "https://www.facebook.com/v18.0/dialog/oauth?"
-                        + "client_id=" + FB_APP_ID
-                        + "&redirect_uri=" + REDIRECT_URI
-                        + "&scope=email,public_profile";
+                        + "client_id=" + FB_APP_ID + "&redirect_uri=" + REDIRECT_URI + "&scope=email,public_profile";
 
-                if (Desktop.isDesktopSupported()) {
-                    Desktop.getDesktop().browse(new URI(loginUrl));
-                }
+                if (Desktop.isDesktopSupported()) Desktop.getDesktop().browse(new URI(loginUrl));
 
                 String authCode = listenForCode();
-
                 if (authCode != null) {
                     FacebookClient.AccessToken token = new DefaultFacebookClient(Version.LATEST)
                             .obtainUserAccessToken(FB_APP_ID, FB_APP_SECRET, REDIRECT_URI, authCode);
 
                     FacebookClient fbClient = new DefaultFacebookClient(token.getAccessToken(), Version.LATEST);
+                    // Lấy picture.type(large) để có avatar chất lượng cao
                     com.restfb.types.User fbUser = fbClient.fetchObject("me", com.restfb.types.User.class,
-                            Parameter.with("fields", "name,email"));
+                            Parameter.with("fields", "name,email,picture.type(large)"));
 
-                    Platform.runLater(() -> processSocialLogin(fbUser.getEmail(), fbUser.getName(), "FACEBOOK", event));
+                    String avatarUrl = fbUser.getPicture() != null ? fbUser.getPicture().getUrl() : "";
+                    Platform.runLater(() -> processSocialLogin(fbUser.getEmail(), fbUser.getName(), avatarUrl, "FACEBOOK", event));
                 }
             } catch (Exception e) {
-                e.printStackTrace();
                 Platform.runLater(() -> showAlert(Alert.AlertType.ERROR, "Lỗi", "Đăng nhập Facebook thất bại!"));
             }
         }).start();
@@ -168,6 +150,8 @@ public class LoginController {
     private String listenForCode() throws Exception {
         com.sun.net.httpserver.HttpServer server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress(8888), 0);
         final String[] code = new String[1];
+        CountDownLatch latch = new CountDownLatch(1); // Thay thế vòng lặp sleep bằng latch
+
         server.createContext("/", t -> {
             String query = t.getRequestURI().getQuery();
             if (query != null && query.contains("code=")) {
@@ -176,19 +160,24 @@ public class LoginController {
                 t.sendResponseHeaders(200, res.length());
                 t.getResponseBody().write(res.getBytes());
                 t.getResponseBody().close();
+                latch.countDown();
                 server.stop(0);
             }
         });
         server.start();
-        long start = System.currentTimeMillis();
-        while (code[0] == null && System.currentTimeMillis() - start < 60000) {
-            Thread.sleep(500);
-        }
+        latch.await(60, TimeUnit.SECONDS); // Đợi tối đa 60s
         return code[0];
     }
 
-    private void completeLogin(User user, String displayName, ActionEvent event) {
-        UserDTO.login(user.getUserId(), user.getUsername());
+    private void completeLogin(User user, String displayName, String avatarUrl, ActionEvent event) {
+        // CẬP NHẬT: Đã đủ 3 tham số (int, String, String)
+        UserDTO.login(user.getUserId(), user.getUsername(), avatarUrl);
+
+        // Cập nhật preview avatar nếu imgAvatar có tồn tại trong FXML
+        if (imgAvatar != null && avatarUrl != null && !avatarUrl.isEmpty()) {
+            imgAvatar.setImage(new Image(avatarUrl, true));
+        }
+
         showAlert(Alert.AlertType.INFORMATION, "Thành công", "Chào mừng " + displayName);
         String roleName = String.valueOf(user.getRole());
         String view = "ADMIN".equalsIgnoreCase(roleName) ? "AdminView.fxml" : "UserView.fxml";
@@ -197,19 +186,14 @@ public class LoginController {
 
     @FXML
     private void togglePassword(ActionEvent event) {
-        if (checkShowPassword.isSelected()) {
-            txtPasswordVisible.setText(txtPassword.getText());
-            txtPasswordVisible.setVisible(true);
-            txtPasswordVisible.setManaged(true);
-            txtPassword.setVisible(false);
-            txtPassword.setManaged(false);
-        } else {
-            txtPassword.setText(txtPasswordVisible.getText());
-            txtPassword.setVisible(true);
-            txtPassword.setManaged(true);
-            txtPasswordVisible.setVisible(false);
-            txtPasswordVisible.setManaged(false);
-        }
+        boolean selected = checkShowPassword.isSelected();
+        txtPasswordVisible.setText(txtPassword.getText());
+        txtPassword.setText(txtPasswordVisible.getText());
+
+        txtPasswordVisible.setVisible(selected);
+        txtPasswordVisible.setManaged(selected);
+        txtPassword.setVisible(!selected);
+        txtPassword.setManaged(!selected);
     }
 
     @FXML
@@ -221,15 +205,8 @@ public class LoginController {
         }
     }
 
-    @FXML
-    private void handleBack(ActionEvent event) {
-        NavigationManager.switchScene(event, "WelcomeView.fxml");
-    }
-
-    @FXML
-    private void handleForgot(ActionEvent event) {
-        NavigationManager.switchScene(event, "ForgotPasswordView.fxml");
-    }
+    @FXML private void handleBack(ActionEvent event) { NavigationManager.switchScene(event, "WelcomeView.fxml"); }
+    @FXML private void handleForgot(ActionEvent event) { NavigationManager.switchScene(event, "ForgotPasswordView.fxml"); }
 
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
