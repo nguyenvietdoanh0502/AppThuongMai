@@ -79,3 +79,8 @@ AppThuongMai/
     └── 📁 resources/           # Tài nguyên hệ thống
         ├── 📁 asset/           # Hình ảnh, biểu tượng, tài nguyên tĩnh
         └── 📁 view/            # Các tệp giao diện người dùng (.fxml)
+```
+## 📂 Sơ đồ ERD
+<p align="center">
+  <img src="./src/main/resources/asset/ERD.png" alt="Logo">
+</p>
