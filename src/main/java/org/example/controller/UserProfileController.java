@@ -83,7 +83,7 @@ public class UserProfileController implements Initializable {
             txtUsername.setText(user.getUsername());
             txtEmail.setText(user.getEmail());
             txtRole.setText(String.valueOf(user.getRole()));
-            txtMoney.setText("Số dư: $" + String.format("%.2f", user.getMoney()));
+            txtMoney.setText("$" + String.format("%.2f", user.getMoney()));
         }
 
 
@@ -91,17 +91,14 @@ public class UserProfileController implements Initializable {
             String avatarUrl = userSession.getAvatarUrl();
             Image image = (avatarUrl != null && !avatarUrl.isEmpty())
                     ? new Image(avatarUrl, true)
-                    : new Image(getClass().getResourceAsStream("/org/example/asset/avt.png")); // Đường dẫn ảnh mặc định của bạn
+                    : new Image(getClass().getResourceAsStream("/asset/avt.png"));
 
             image.progressProperty().addListener((obs, old, progress) -> {
                 if (progress.doubleValue() == 1.0) {
-                    // Center-Crop: Cắt ảnh từ giữa để tránh bị méo khi đưa vào khung vuông
                     double size = Math.min(image.getWidth(), image.getHeight());
                     double x = (image.getWidth() - size) / 2;
                     double y = (image.getHeight() - size) / 2;
                     imgAvatar.setViewport(new Rectangle2D(x, y, size, size));
-
-                    // Tạo Clip bo góc 30px
                     Rectangle clip = new Rectangle(imgAvatar.getFitWidth(), imgAvatar.getFitHeight());
                     clip.setArcWidth(30);
                     clip.setArcHeight(30);
