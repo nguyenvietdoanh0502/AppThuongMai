@@ -33,7 +33,7 @@ public class WishListDAO {
         ){
             ps.setInt(1,userId);
             ResultSet res  = ps.executeQuery();
-            if(res.next()){
+            while(res.next()){
                 WishListDTO wishListDTO = new WishListDTO();
                 wishListDTO.setProductId(res.getInt("product_id"));
                 wishListDTO.setTitle(res.getString("title"));
