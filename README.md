@@ -36,6 +36,10 @@
 * **Quản lý kho hàng:** Thêm, sửa, xóa thông tin sản phẩm.
 * **Báo cáo thống kê:** Theo dõi doanh thu, sản phẩm đã bán và danh sách khách hàng.
 
+### 🔑Tính năng tối ưu : Cho phép người dùng đng ký bằng google hoặc facebook.
+* **Tích hợp OAuth 2.0**: Cho phép người dùng đăng nhập nhanh qua Google và Facebook.
+* **Tối ưu UX**: Loại bỏ các bước nhập liệu thủ công, tự động đồng bộ hóa thông tin cá nhân và ảnh đại diện từ mạng xã hội.
+* **Bảo mật**: Không lưu trữ mật khẩu trực tiếp, đảm bảo an toàn tuyệt đối cho tài khoản người dùng thông qua mã xác thực (Access Token).
 ### ⚙️ Đặc tính Hệ thống
 * Hỗ trợ kết nối MySQL linh hoạt (Local/Cloud).
 * Giao diện hiện đại, tối ưu hiệu suất với JavaFX CSS.
